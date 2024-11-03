@@ -25,29 +25,6 @@
 - `!lives` toggles infinite afterlives
 - `tank` toggles tank kill counter on origins
 
-## Teleport locations
-### Tranzit
-- `farm`
-- `town`
-- `dinner`
-- `tunel`
-- `depot`
-- `power`
-- `bus`
-### Die Rise
-- `shaft`
-- `tramp`
-### MOB
-- `cafe`
-- `cage`
-- `fans`
-- `dt`
-### Buried
-- `saloon`
-- `jug`
-- `tunel`
-### Origins
-- `church`
-- `tcp`
-- `gen2`
-- `tank`
+| **Mapa**     | **Tranzit**            | **Die Rise**   | **MOB**     | **Buried**   | **Origins**      |
+|--------------|------------------------|----------------|-------------|--------------|------------------|
+| **Ubicación**| `farm`, `town`, `dinner`, `tunel`, `depot`, `power`, `bus` | `shaft`, `tramp` | `cafe`, `cage`, `fans`, `dt` | `saloon`, `jug`, `tunel` | `church`, `tcp`, `gen2`, `tank` |
