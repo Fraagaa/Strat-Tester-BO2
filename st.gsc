@@ -1462,6 +1462,7 @@ setDvars()
     setdvar("player_strafeSpeedScale", 1 );
     setdvar("player_backSpeedScale", 1 );
     setdvar("r_dof_enable", 0 );    
+	createDvar("tank", 0); 
 	createDvar("setupBuried", 1); 
 	createDvar("depart", 1);
 	createDvar("zone", 1);
@@ -1719,6 +1720,7 @@ readchat()
             case "!cherry": setDvar("cherry", !getDvarInt("cherry")); break;
             case "!perkrng": setDvar("perkrng", !getDvarInt("perkrng")); break;
             case "!lives": setDvar("lives", !getDvarInt("lives")); break;
+            case "!tank": setDvar("tank", !getDvarInt("tank")); break;
         }
     }
 }
@@ -1733,16 +1735,6 @@ tpc_player(player, x, z, y)
     player iprintln("Mooving " + player.name + " to " + x + " " + y + " " + z);
     player setOrigin((string_to_float(x), string_to_float(y), string_to_float(z)));
     return;
-    
-    switch(z)
-    {
-        case "cafe": pos = (6917, -5740, -62); ang = (0, 131, 0); break;
-        case "cage": pos = (-1771, 5401, -71); ang = (0, 0, 0); break;
-        case "fans": pos = (-1042, 9489, 1350); ang = (0, -43, 0); break;
-        case "dt":   pos = (25, 8762, 1128); ang = (0, 0, 0); break;
-    }
-    player setOrigin(pos);
-    player setPlayerAngles(ang);
 }
 
 tpl_player(player, location)
