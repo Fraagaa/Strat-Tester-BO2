@@ -23,6 +23,7 @@
 - `!cherry` toggles getting cherry in origins
 - `!perkrng` toggles autorestart for pap on green house
 - `!lives` toggles infinite afterlives
+- `tank` toggles tank kill counter on origins
 
 ## Teleport locations
 ### Tranzit
