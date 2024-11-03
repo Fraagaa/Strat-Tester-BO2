@@ -25,6 +25,7 @@
 - `!lives` toggles infinite afterlives
 - `tank` toggles tank kill counter on origins
 
+## TP locations for !tp
 | **Map**     | **Tranzit**            | **Die Rise**   | **MOB**     | **Buried**   | **Origins**      |
 |--------------|------------------------|----------------|-------------|--------------|------------------|
 | **Location**| `farm` `town` `dinner` `tunel` `depot` `power` `bus` | `shaft` `tramp` | `cafe` `cage` `fans` `dt` | `saloon` `jug` `tunel` | `church` `tcp` `gen2` `tank` |
