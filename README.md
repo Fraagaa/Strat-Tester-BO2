@@ -27,4 +27,4 @@
 
 | **Mapa**     | **Tranzit**            | **Die Rise**   | **MOB**     | **Buried**   | **Origins**      |
 |--------------|------------------------|----------------|-------------|--------------|------------------|
-| **Ubicación**| `farm`, `town`, `dinner`, `tunel`, `depot`, `power`, `bus` | `shaft`, `tramp` | `cafe`, `cage`, `fans`, `dt` | `saloon`, `jug`, `tunel` | `church`, `tcp`, `gen2`, `tank` |
+| **Ubicación**| `farm` `town` `dinner` `tunel` `depot` `power` `bus` | `shaft` `tramp` | `cafe` `cage` `fans` `dt` | `saloon` `jug` `tunel` | `church` `tcp` `gen2` `tank` |
