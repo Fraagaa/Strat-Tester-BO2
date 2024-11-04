@@ -66,7 +66,7 @@
 ### Die Rise
 - Spawned trample steam buildable
 
-### MOB
+### MOTD
 - White player will be teleported to the necesary afterlife switches to be able to shock them and pick up the key
 - Spawned shield buildable at cafeteria
 - Infinite afterlives, can be switched off with !lives
