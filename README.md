@@ -5,6 +5,7 @@
 ## Chat Commands
 - `!tpc` teleports player to desired coordinates
 - `!tp` teleports player to desired location
+- `drops` enables drops
 - `!power` toggles between power and no power
 - `!boards` toggles opening window's boards
 - `!doors` toggles oppening all necesary doors
@@ -24,6 +25,7 @@
 - `!perkrng` toggles autorestart for pap on green house
 - `!lives` toggles infinite afterlives
 - `tank` toggles tank kill counter on origins
+- `templars` starts a templar round if more than 3 generator are on
 
 ## TP locations for !tp
 | **Map**     | **Tranzit**            | **Die Rise**   | **MOB**     | **Buried**   | **Origins**      |
