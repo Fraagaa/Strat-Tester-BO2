@@ -63,7 +63,7 @@ speeddoor()
 	wait 2;
 	self setOrigin((2050, 9566, 1336)); // cafe key
 	wait 2;
-	self setOrigin((-277, 9107, 1336)); 	// office key
+	self setOrigin((-277, 9107, 1336));// office key
 	wait 2;
 	self setOrigin((1195, 10613, 1336));
 	self TakeWeapon("lightning_hands_zm");

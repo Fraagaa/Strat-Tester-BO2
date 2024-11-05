@@ -19,36 +19,42 @@
 #include maps\mp\zombies\_zm_craftables;
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_blockers;
+#include maps\mp\zm_tomb_capture_zones;
 
 main()
 {
-	foreach(weapon in level.zombie_weapons)
-		println("Removing " + weapon.weapon_name + " from the box");
 	replaceFunc(maps\mp\animscripts\zm_utility::wait_network_frame, ::base_game_network_frame);
 	replaceFunc(maps\mp\zombies\_zm_utility::wait_network_frame, ::base_game_network_frame);
+	replaceFunc(maps\mp\zombies\_zm_powerups::get_next_powerup, ::get_next_powerup);
 }
 
-debug()
+get_next_powerup()
 {
-	while(true)
-	{
-		a = level.players[0].origin;
-		println(int(a[0]) + " " + int(a[1]) + " " + int(a[2]));
+	while(level.remove_drops)
 		wait 1;
-	}
+    powerup = level.zombie_powerup_array[level.zombie_powerup_index];
+    level.zombie_powerup_index++;
+
+    if ( level.zombie_powerup_index >= level.zombie_powerup_array.size )
+    {
+        level.zombie_powerup_index = 0;
+        randomize_powerups();
+    }
+
+    return powerup;
 }
 
 init()
 {
 	thread setdvars();
 	thread fix_highround();
-	level thread debug();
     level thread turn_on_power();
     level thread set_starting_round();
     level thread remove_boards_from_windows();
 	thread enable_cheats();
 	level thread readChat();
     thread wait_for_players();
+	level.remove_drops = true;
     
 	flag_wait("initial_blackscreen_passed");
 	level thread openAllDoors();
@@ -115,9 +121,28 @@ enable_cheats()
 
 set_starting_round()
 {
-    level.zombie_move_speed = 130;
-	level.zombie_vars[ "zombie_spawn_delay" ] = 0.08;
 	level.round_number = getDvarInt( "round" );
+	level.zombie_vars[ "zombie_spawn_delay" ] = 2;
+	timer = level.zombie_vars["zombie_spawn_delay"];
+
+	for ( i = 1; i <= level.round_number; i++ )
+        {
+            timer = level.zombie_vars["zombie_spawn_delay"];
+
+            if ( timer > 0.08 )
+            {
+                level.zombie_vars["zombie_spawn_delay"] = timer * 0.95;
+                continue;
+            }
+
+            if ( timer < 0.08 )
+			{
+                level.zombie_vars["zombie_spawn_delay"] = 0.08;
+				break;
+			}
+        }
+
+	level.zombie_move_speed = level.round_number * level.zombie_vars["zombie_move_speed_multiplier"];
 }
 
 zombie_spawn_wait()
@@ -343,6 +368,7 @@ give_weapons_on_spawn()
 	}
 	if(isorigins())
 	{
+		self takeweapon("c96_zm");
 		self giveweapon_nzv( "sticky_grenade_zm" );
 		self giveweapon_nzv( "cymbal_monkey_zm" );
 		self giveweapon_nzv( "tomb_shield_zm" );
@@ -415,6 +441,8 @@ give_weapons_on_spawn()
 			self giveweapon_nzv( "jetgun_zm" );
 		self giveweapon_nzv( "emp_grenade_zm" );
 		self giveweapon_nzv( "tazer_knuckles_zm" );
+		if(self != level.players[0])
+			giveweapon_nzv( "m1911_upgraded_zm" );
 	}
 	if(istown())
 	{
@@ -1125,7 +1153,6 @@ get_zone_name()
     return name;
 }
 
-
 changecraftableoption( index )
 {
 	foreach (craftable in level.a_uts_craftables)
@@ -1721,10 +1748,11 @@ readchat()
             case "!perkrng": setDvar("perkrng", !getDvarInt("perkrng")); break;
             case "!lives": setDvar("lives", !getDvarInt("lives")); break;
             case "!tank": setDvar("tank", !getDvarInt("tank")); break;
+            case "!drops": level.remove_drops = !level.remove_drops; player iprintln("Drops removed"); break;
+            case "!templars": level thread recapture_round_start(); break;
         }
     }
 }
-
 
 tpc_player(player, x, z, y)
 {
