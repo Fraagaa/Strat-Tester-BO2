@@ -25,6 +25,8 @@
 - `!perkrng` toggles autorestart for pap on green house
 - `!lives` toggles infinite afterlives
 - `tank` toggles tank kill counter on origins
+- `tumble` toggles tumble counter on origins
+- `stomp` toggles stomp counter on origins
 - `templars` starts a templar round if more than 3 generator are on
 
 ## TP locations for !tp
