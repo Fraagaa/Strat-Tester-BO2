@@ -5,7 +5,7 @@
 ## Chat Commands
 - `!tpc` teleports player to desired coordinates
 - `!tp` teleports player to desired location
-- `drops` enables drops
+- `!drops` enables drops
 - `!power` toggles between power and no power
 - `!boards` toggles opening window's boards
 - `!doors` toggles oppening all necesary doors
