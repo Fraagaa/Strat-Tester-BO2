@@ -42,6 +42,7 @@ init()
 	level thread takeAllParts();
 	level thread activateGenerators();
 	level thread call_tank();
+	if(level.shield)
 	level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
     thread wait_for_players();
     
