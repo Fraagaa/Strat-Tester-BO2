@@ -28,6 +28,7 @@
 
 init()
 {
+	if(level.shield)
 	level thread spawn_buildable_trigger((3366, 9406, 1336), "alcatraz_shield_zm", "^3Press &&1 for ^5Shield"); // shield
 	level waittill( "connected" , player);
 	player thread speeddoor();
