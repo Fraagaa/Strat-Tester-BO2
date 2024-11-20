@@ -54,7 +54,8 @@ init()
 	thread enable_cheats();
 	level thread readChat();
     thread wait_for_players();
-	level.remove_drops = true;
+	level.remove_drops = false;
+	level.shield = true;
     
 	flag_wait("initial_blackscreen_passed");
 	level thread openAllDoors();
@@ -1750,6 +1751,7 @@ readchat()
             case "!tank": setDvar("tank", !getDvarInt("tank")); break;
             case "!drops": level.remove_drops = !level.remove_drops; player iprintln("Drops removed"); break;
             case "!templars": level thread recapture_round_start(); break;
+            case "!shield": level.shield = !level.shield; break;
         }
     }
 }
