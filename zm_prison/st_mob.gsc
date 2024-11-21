@@ -28,6 +28,7 @@
 
 init()
 {
+	flag_wait("initial_blackscreen_passed");
 	level thread spawn_buildable_trigger((3366, 9406, 1336), "alcatraz_shield_zm", "^3Press &&1 for ^5Shield"); // shield
 	level waittill( "connected" , player);
 	player thread speeddoor();
@@ -83,6 +84,8 @@ spawn_buildable_trigger(origin, build, string)
 			if( !player hasWeapon( build ) )
 				player equipment_buy( build );
 
+		if(!level.shield)
+			trigger.origin = (0, -10000, 0);
 		wait 0.1;
 	}
 }

@@ -1,3 +1,4 @@
+
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud;
@@ -46,15 +47,16 @@ get_next_powerup()
 
 init()
 {
-	thread setdvars();
-	thread fix_highround();
+	level thread setdvars();
+	level thread fix_highround();
     level thread turn_on_power();
     level thread set_starting_round();
     level thread remove_boards_from_windows();
 	thread enable_cheats();
 	level thread readChat();
     thread wait_for_players();
-	level.remove_drops = true;
+	level.remove_drops = false;
+	level.shield = true;
     
 	flag_wait("initial_blackscreen_passed");
 	level thread openAllDoors();
@@ -1747,9 +1749,8 @@ readchat()
             case "!cherry": setDvar("cherry", !getDvarInt("cherry")); break;
             case "!perkrng": setDvar("perkrng", !getDvarInt("perkrng")); break;
             case "!lives": setDvar("lives", !getDvarInt("lives")); break;
-            case "!tank": setDvar("tank", !getDvarInt("tank")); break;
             case "!drops": level.remove_drops = !level.remove_drops; player iprintln("Drops removed"); break;
-            case "!templars": level thread recapture_round_start(); break;
+            case "!shield": level.shield = !level.shield; break;
         }
     }
 }

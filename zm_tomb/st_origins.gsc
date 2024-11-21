@@ -42,10 +42,11 @@ init()
 	level thread takeAllParts();
 	level thread activateGenerators();
 	level thread call_tank();
-	level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
+	level thread readChat();
     thread wait_for_players();
     
 	flag_wait("initial_blackscreen_passed");
+	level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
     foreach(player in level.players)
         for(i = 0; i < 6; i++)
             player maps\mp\zombies\_zm_challenges::increment_stat( "zc_zone_captures" );
@@ -264,6 +265,7 @@ tank_drop_powerups()
 
 spawn_buildable_trigger(origin, build, string)
 {
+	self endon("end_game");
 	trigger = spawn("trigger_radius", origin, 40, 70, 140);
 	trigger.targetname = "shield_trigger";
 	trigger SetCursorHint("HINT_NOICON");
@@ -275,6 +277,8 @@ spawn_buildable_trigger(origin, build, string)
 			if( !player hasWeapon( build ) )
 					player equipment_buy( build );
 
+		if(!level.shield)
+			trigger.origin = (0, -10000, 0);
 		wait 0.1;
 	}
 }
@@ -508,23 +512,23 @@ stomptracker()
 {
 	self endon("disconnect");
 	level.stompkills = 0;
-	stomp_hud = newclienthudelem(self);
-	stomp_hud.alignx = "left";
-	stomp_hud.aligny = "bottom";
-	stomp_hud.horzalign = "user_left";
-	stomp_hud.vertalign = "user_bottom";
-	stomp_hud.x = stomp_hud.x - 0;
-	stomp_hud.y = stomp_hud.y - 220;
-	stomp_hud.fontscale = 1.6;
-	stomp_hud.alpha = 0;
-	stomp_hud.hidewheninmenu = 0;
-	stomp_hud.hidden = 0;
-	stomp_hud.label = &"^3Stomp: ^5";
+	level.stomp_hud = newclienthudelem(self);
+	level.stomp_hud.alignx = "left";
+	level.stomp_hud.aligny = "bottom";
+	level.stomp_hud.horzalign = "user_left";
+	level.stomp_hud.vertalign = "user_bottom";
+	level.stomp_hud.x = 0;
+	level.stomp_hud.y = -220;
+	level.stomp_hud.fontscale = 1.6;
+	level.stomp_hud.alpha = 0;
+	level.stomp_hud.hidewheninmenu = 0;
+	level.stomp_hud.hidden = 0;
+	level.stomp_hud.label = &"^3Stomp: ^5";
 	flag_wait("initial_blackscreen_passed");
-	stomp_hud.alpha = 1;
+	level.stomp_hud.alpha = 1;
 	while(1)
 	{
-		stomp_hud setvalue(level.stompkills);
+		level.stomp_hud setvalue(level.stompkills);
 		wait(0.05);
 	}
 }
@@ -533,25 +537,24 @@ tanktracker()
 {
 	self endon("disconnect");
 	level.tankkills = 0;
-	tank_hud = newclienthudelem(self);
-	tank_hud.alignx = "left";
-	tank_hud.aligny = "bottom";
-	tank_hud.horzalign = "user_left";
-	tank_hud.vertalign = "user_bottom";
-	tank_hud.x = tank_hud.x - 0;
-	tank_hud.y = tank_hud.y - 180;
-	tank_hud.fontscale = 1.6;
-	tank_hud.alpha = 0;
-	tank_hud.hidewheninmenu = 0;
-	tank_hud.hidden = 0;
-	tank_hud.label = &"^3Tank: ^5";
+	level.tank_hud = newclienthudelem(self);
+	level.tank_hud.alignx = "left";
+	level.tank_hud.aligny = "bottom";
+	level.tank_hud.horzalign = "user_left";
+	level.tank_hud.vertalign = "user_bottom";
+	level.tank_hud.x = level.tank_hud.x - 0;
+	level.tank_hud.y = level.tank_hud.y - 180;
+	level.tank_hud.fontscale = 1.6;
+	level.tank_hud.alpha = 0;
+	level.tank_hud.hidewheninmenu = 0;
+	level.tank_hud.hidden = 0;
+	level.tank_hud.label = &"^3Tank: ^5";
 	flag_wait("initial_blackscreen_passed");
-	tank_hud.alpha = 1;
+	level.tank_hud.alpha = 1;
 	while(1)
 	{
-		tank_hud setvalue(level.tankkills);
+		level.tank_hud setvalue(level.tankkills);
 		wait(0.05);
-		tank_hud.alpha = getDvarInt("tank");
 	}
 }
 
@@ -559,23 +562,23 @@ tumbletracker()
 {
 	self endon("disconnect");
 	level.tumbles = 0;
-	tumble_hud = newclienthudelem(self);
-	tumble_hud.alignx = "left";
-	tumble_hud.aligny = "bottom";
-	tumble_hud.horzalign = "user_left";
-	tumble_hud.vertalign = "user_bottom";
-	tumble_hud.x = tumble_hud.x - 0;
-	tumble_hud.y = tumble_hud.y - 200;
-	tumble_hud.fontscale = 1.6;
-	tumble_hud.alpha = 0;
-	tumble_hud.hidewheninmenu = 0;
-	tumble_hud.hidden = 0;
-	tumble_hud.label = &"^3Tumble: ^5";
+	level.tumble_hud = newclienthudelem(self);
+	level.tumble_hud.alignx = "left";
+	level.tumble_hud.aligny = "bottom";
+	level.tumble_hud.horzalign = "user_left";
+	level.tumble_hud.vertalign = "user_bottom";
+	level.tumble_hud.x = 0;
+	level.tumble_hud.y = -200;
+	level.tumble_hud.fontscale = 1.6;
+	level.tumble_hud.alpha = 0;
+	level.tumble_hud.hidewheninmenu = 0;
+	level.tumble_hud.hidden = 0;
+	level.tumble_hud.label = &"^3Tumble: ^5";
 	flag_wait("initial_blackscreen_passed");
-	tumble_hud.alpha = 1;
+	level.tumble_hud.alpha = 1;
 	while(1)
 	{
-		tumble_hud setvalue(level.tumbles);
+		level.tumble_hud setvalue(level.tumbles);
 		wait(0.05);
 	}
 }
@@ -639,4 +642,26 @@ custom_knockdown_zombie_animate_state()
 	self.is_knocked_down = 1;
 	self waittill_any("damage", "back_up");
 	self.is_knocked_down = 0;
+}
+
+
+readchat() 
+{
+    self endon("end_game");
+    while (true) 
+    {
+        level waittill("say", message, player);
+        msg = strtok(message, " ");
+
+        if(msg[0][0] != "!")
+            continue;
+
+        switch(msg[0])
+        {
+            case "!templars": level thread recapture_round_start(); break;
+            case "!stomp": level.stomp_hud.alpha = !level.stomp_hud.alpha; break;
+            case "!tumble": level.tumble_hud.alpha = !level.tumble_hud.alpha; break;
+            case "!tank": level.tank_hud.alpha = !level.tank_hud.alpha; break;
+        }
+    }
 }
