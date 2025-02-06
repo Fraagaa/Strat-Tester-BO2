@@ -1,6 +1,6 @@
 # Strat Tester BO2
 
-## [**Donwload**](https://github.com/Fraagaa/Strat-Tester-BO2/releases/latest/download/Strat.Tester.rar)
+## [**Donwload**](https://github.com/Fraagaa/Strat-Tester-BO2/releases/latest/download/Strat.Tester.BO2.rar)
 
 ## Chat Commands
 - `!tpc` teleports player to desired coordinates
