@@ -20,7 +20,7 @@
 #include maps\mp\zombies\_zm_craftables;
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_blockers;
-#include maps\mp\zm_tomb_capture_zones;
+#include maps\mp\zombies\_zm_powerups;
 
 main()
 {
@@ -29,9 +29,10 @@ main()
 	replaceFunc(maps\mp\zombies\_zm_powerups::get_next_powerup, ::get_next_powerup);
 }
 
+
 get_next_powerup()
 {
-	while(level.remove_drops)
+	while(getDvarInt("remove_drops"))
 		wait 1;
     powerup = level.zombie_powerup_array[level.zombie_powerup_index];
     level.zombie_powerup_index++;
@@ -55,12 +56,15 @@ init()
 	thread enable_cheats();
 	level thread readChat();
     thread wait_for_players();
-	level.remove_drops = false;
-	level.shield = true;
+	if(getDvar("remove_drops") == "")
+		setDvar("remove_drops", false);
+	if(getDvar("shield") == "")
+		setDvar("shield", false);
     
 	flag_wait("initial_blackscreen_passed");
 	level thread openAllDoors();
     level thread round_pause();
+	setdvar("cg_ufo_scaler", 6);
 }
 
 wait_for_players()
@@ -297,6 +301,7 @@ give_perks( perk_array )
 
 give_weapons_on_spawn()
 {
+	wait 2; // get mulekick
 	if(!getDvarInt("weapons"))
 		return;
 	
@@ -363,7 +368,8 @@ give_weapons_on_spawn()
 			self giveweapon_nzv( "m1911_upgraded_zm" );
 			self giveweapon_nzv( "uzi_zm" );
 		}
-		self giveweapon_nzv( "alcatraz_shield_zm" );
+		if(getDvarInt("shield"))
+			self giveweapon_nzv( "alcatraz_shield_zm" );
 		self giveweapon_nzv( "claymore_zm" );
 		self giveweapon_nzv( "upgraded_tomahawk_zm" );
 		self setclientfieldtoplayer( "upgraded_tomahawk_in_use", 1 );
@@ -373,7 +379,8 @@ give_weapons_on_spawn()
 		self takeweapon("c96_zm");
 		self giveweapon_nzv( "sticky_grenade_zm" );
 		self giveweapon_nzv( "cymbal_monkey_zm" );
-		self giveweapon_nzv( "tomb_shield_zm" );
+		if(getDvarInt("shield"))
+			self giveweapon_nzv( "tomb_shield_zm" );
 		if(level.players.size == 1)
 		{
 			if(getDvarInt("wm"))
@@ -1065,92 +1072,60 @@ get_zone_name()
 		}
 	if(name != "")
 		return name;
-	if(istranzit())
+	if(istranzit() || isdepot() || istown() || isfarm())
 		switch (zone)
 		{
-			case "zone_start": name = "Lower Laboratory"; break;
-			case "zone_start_a": name = "Upper Laboratory"; break;
-			case "zone_start_b": name = "Generator 1"; break;
-			case "zone_bunker_1a": name = "Generator 3 Bunker 1"; break;
-			case "zone_fire_stairs": name = "Fire Tunnel"; break;
-			case "zone_bunker_1": name = "Generator 3 Bunker 2"; break;
-			case "zone_bunker_3a": name = "Generator 3"; break;
-			case "zone_bunker_3b": name = "Generator 3 Bunker 3"; break;
-			case "zone_bunker_2a": name = "Generator 2 Bunker 1"; break;
-			case "zone_bunker_2": name = "Generator 2 Bunker 2"; break;
-			case "zone_bunker_4a": name = "Generator 2"; break;
-			case "zone_bunker_4b": name = "Generator 2 Bunker 3"; break;
+			case "zone_pri": name = "Bus Depot"; break;
+			case "zone_pri2": name = "Bus Depot Hallway"; break;
+			case "zone_station_ext": name = "Outside Bus Depot"; break;
+			case "zone_trans_2b": name = "Fog After Bus Depot"; break;
+			case "zone_trans_2": name = "Tunnel Entrance"; break;
+			case "zone_amb_tunnel": name = "Tunnel"; break;
+			case "zone_trans_3": name = "Tunnel Exit"; break;
+			case "zone_roadside_west": name = "Outside Diner"; break;
+			case "zone_gas": name = "Gas Station"; break;
+			case "zone_roadside_east": name = "Outside Garage"; break;
+			case "zone_trans_diner": name = "Fog Outside Diner"; break;
+			case "zone_trans_diner2": name = "Fog Outside Garage"; break;
+			case "zone_gar": name = "Garage"; break;
+			case "zone_din": name = "Diner"; break;
+			case "zone_diner_roof": name = "Diner Roof"; break;
+			case "zone_trans_4": name = "Fog After Diner"; break;
+			case "zone_amb_forest": name = "Forest"; break;
+			case "zone_trans_10": name = "Outside Church"; break;
+			case "zone_town_church": name = "Church"; break;
+			case "zone_trans_5": name = "Fog Before Farm"; break;
+			case "zone_far": name = "Outside Farm"; break;
+			case "zone_far_ext": name = "Farm"; break;
+			case "zone_brn": name = "Barn"; break;
+			case "zone_farm_house": name = "Farmhouse"; break;
+			case "zone_trans_6": name = "Fog After Farm"; break;
+			case "zone_amb_cornfield": name = "Cornfield"; break;
+			case "zone_cornfield_prototype": name = "Nacht"; break;
+			case "zone_trans_7": name = "Upper Fog Before Power"; break;
+			case "zone_trans_pow_ext1": name = "Fog Before Power"; break;
+			case "zone_pow": name = "Outside Power Station"; break;
+			case "zone_prr": name = "Power Station"; break;
+			case "zone_pcr": name = "Power Control Room"; break;
+			case "zone_pow_warehouse": name = "Warehouse"; break;
+			case "zone_trans_8": name = "Fog After Power"; break;
+			case "zone_amb_power2town": name = "Cabin"; break;
+			case "zone_trans_9": name = "Fog Before Town"; break;
+			case "zone_town_north": name = "North Town"; break;
+			case "zone_tow": name = "Center Town"; break;
+			case "zone_town_east": name = "East Town"; break;
+			case "zone_town_west": name = "West Town"; break;
+			case "zone_town_south": name = "South Town"; break;
+			case "zone_bar": name = "Bar"; break;
+			case "zone_town_barber": name = "Bookstore"; break;
+			case "zone_ban": name = "Bank"; break;
+			case "zone_ban_vault": name = "Bank Vault"; break;
+			case "zone_tbu": name = "Below Bank"; break;
+			case "zone_trans_11": name = "Fog After Town"; break;
+			case "zone_amb_bridge": name = "Bridge"; break;
+			case "zone_trans_1": name = "Fog Before Bus Depot"; break;
 			case "zone_bunker_4c": name = "Tank Station"; break;
 			case "zone_bunker_4d": name = "Above Tank Station"; break;
-			case "zone_bunker_tank_c": name = "Generator 2 Tank Route 1"; break;
-			case "zone_bunker_tank_c1": name = "Generator 2 Tank Route 2"; break;
-			case "zone_bunker_4e": name = "Generator 2 Tank Route 3"; break;
-			case "zone_bunker_tank_d": name = "Generator 2 Tank Route 4"; break;
-			case "zone_bunker_tank_d1": name = "Generator 2 Tank Route 5"; break;
-			case "zone_bunker_4f": name = "zone_bunker_4f"; break;
-			case "zone_bunker_5a": name = "Workshop Downstairs"; break;
-			case "zone_bunker_5b": name = "Workshop Upstairs"; break;
-			case "zone_nml_2a": name = "No Man's Land Walkway"; break;
-			case "zone_nml_2": name = "No Man's Land Entrance"; break;
-			case "zone_bunker_tank_e": name = "Generator 5 Tank Route 1"; break;
-			case "zone_bunker_tank_e1": name = "Generator 5 Tank Route 2"; break;
-			case "zone_bunker_tank_e2": name = "zone_bunker_tank_e2"; break;
-			case "zone_bunker_tank_f": name = "Generator 5 Tank Route 3"; break;
-			case "zone_nml_1": name = "Generator 5 Tank Route 4"; break;
-			case "zone_nml_4": name = "Generator 5 Tank Route 5"; break;
-			case "zone_nml_0": name = "Generator 5 Left Footstep"; break;
-			case "zone_nml_5": name = "Generator 5 Right Footstep Walkway"; break;
-			case "zone_nml_farm": name = "Generator 5"; break;
-			case "zone_nml_celllar": name = "Generator 5 Cellar"; break;
-			case "zone_bolt_stairs": name = "Lightning Tunnel"; break;
-			case "zone_nml_3": name = "No Man's Land 1st Right Footstep"; break;
-			case "zone_nml_2b": name = "No Man's Land Stairs"; break;
-			case "zone_nml_6": name = "No Man's Land Left Footstep"; break;
-			case "zone_nml_8": name = "No Man's Land 2nd Right Footstep"; break;
-			case "zone_nml_10a": name = "Generator 4 Tank Route 1"; break;
-			case "zone_nml_10": name = "Generator 4 Tank Route 2"; break;
-			case "zone_nml_7": name = "Generator 4 Tank Route 3"; break;
-			case "zone_bunker_tank_a": name = "Generator 4 Tank Route 4"; break;
-			case "zone_bunker_tank_a1": name = "Generator 4 Tank Route 5"; break;
-			case "zone_bunker_tank_a2": name = "zone_bunker_tank_a2"; break;
-			case "zone_bunker_tank_b": name = "Generator 4 Tank Route 6"; break;
-			case "zone_nml_9": name = "Generator 4 Left Footstep"; break;
-			case "zone_air_stairs": name = "Wind Tunnel"; break;
-			case "zone_nml_11": name = "Generator 4"; break;
-			case "zone_nml_12": name = "Generator 4 Right Footstep"; break;
-			case "zone_nml_16": name = "Excavation Site Front Path"; break;
-			case "zone_nml_17": name = "Excavation Site Back Path"; break;
-			case "zone_nml_18": name = "Excavation Site Level 3"; break;
-			case "zone_nml_19": name = "Excavation Site Level 2"; break;
-			case "ug_bottom_zone": name = "Excavation Site Level 1"; break;
-			case "zone_nml_13": name = "Generator 5 To Generator 6 Path"; break;
-			case "zone_nml_14": name = "Generator 4 To Generator 6 Path"; break;
-			case "zone_nml_15": name = "Generator 6 Entrance"; break;
-			case "zone_village_0": name = "Generator 6 Left Footstep"; break;
-			case "zone_village_5": name = "Generator 6 Tank Route 1"; break;
-			case "zone_village_5a": name = "Generator 6 Tank Route 2"; break;
-			case "zone_village_5b": name = "Generator 6 Tank Route 3"; break;
-			case "zone_village_1": name = "Generator 6 Tank Route 4"; break;
-			case "zone_village_4b": name = "Generator 6 Tank Route 5"; break;
-			case "zone_village_4a": name = "Generator 6 Tank Route 6"; break;
-			case "zone_village_4": name = "Generator 6 Tank Route 7"; break;
-			case "zone_village_2": name = "Church"; break;
-			case "zone_village_3": name = "Generator 6 Right Footstep"; break;
-			case "zone_village_3a": name = "Generator 6"; break;
-			case "zone_ice_stairs": name = "Ice Tunnel"; break;
-			case "zone_bunker_6": name = "Above Generator 3 Bunker"; break;
-			case "zone_nml_20": name = "Above No Man's Land"; break;
-			case "zone_village_6": name = "Behind Church"; break;
-			case "zone_chamber_0": name = "The Crazy Place Lightning Chamber"; break;
-			case "zone_chamber_1": name = "The Crazy Place Lightning & Ice"; break;
-			case "zone_chamber_2": name = "The Crazy Place Ice Chamber"; break;
-			case "zone_chamber_3": name = "The Crazy Place Fire & Lightning"; break;
-			case "zone_chamber_4": name = "The Crazy Place Center"; break;
-			case "zone_chamber_5": name = "The Crazy Place Ice & Wind"; break;
-			case "zone_chamber_6": name = "The Crazy Place Fire Chamber"; break;
-			case "zone_chamber_7": name = "The Crazy Place Wind & Fire"; break;
-			case "zone_chamber_8": name = "The Crazy Place Wind Chamber"; break;
-			case "zone_robot_head": name = "Robot's Head"; break;
 		}
     return name;
 }
@@ -1731,26 +1706,82 @@ readchat()
         {
             case "!tpc": tpc_player(player, msg[1], msg[3], msg[2]); break;
             case "!tp": tpl_player(player, msg[1]); break;
-            case "!power": setDvar("power", !getDvarInt("power")); break;
-            case "!boards": setDvar("boards", !getDvarInt("boards")); break;
-            case "!doors": setDvar("doors", !getDvarInt("doors")); break;
+            case "!power":
+				setDvar("power", !getDvarInt("power"));
+				if(getDvarInt("power"))
+					player iprintln("Power will be turned on at the start of the game");
+				else
+					player iprintln("Power will not be turned on at the start of the game");
+			break;
+            case "!boards":
+				setDvar("boards", !getDvarInt("boards"));
+				if(getDvarInt("boards"))
+					player iprintln("Boards will be removed at the start of the game");
+				else
+					player iprintln("Boards will not be removed at the start of the game");
+			break;
+            case "!doors":
+				setDvar("doors", !getDvarInt("doors"));
+				if(getDvarInt("doors"))
+					player iprintln("Doors will be opened at the start of the game");
+				else
+					player iprintln("Doors will not be opened at the start of the game");
+			break;
             case "!round": setDvar("round", msg[1]); break;
             case "!depart": setDvar("depart", msg[1]); break;
             case "!delay": setDvar("delay", msg[1]); break;
             case "!buried": setDvar("setupBuried", !getDvarInt("setupBuried")); break;
             case "!zone": setDvar("zone", !getDvarInt("zone")); break;
             case "!remaining": setDvar("remaining", !getDvarInt("remaining")); break;
-            case "!weapons": setDvar("weapons", !getDvarInt("weapons")); break;
+            case "!weapons":
+				setDvar("weapons", !getDvarInt("weapons"));
+				if(getDvarInt("weapons"))
+					player iprintln("You will spawn with weapons");
+				else
+					player iprintln("You will not spawn with weapons");
+			break;
             case "!perks": setDvar("perks", !getDvarInt("perks")); break;
             case "!traptimer": setDvar("traptimer", !getDvarInt("traptimer")); break;
-            case "!wm": setDvar("wm", !getDvarInt("wm")); break;
+            case "!wm":
+				setDvar("wm", !getDvarInt("wm"));
+				if(getDvarInt("wm"))
+					player iprintln("You will spawn with war machine");
+				else
+					player iprintln("You will not spawn with war machine");
+			break;
             case "!healthbar": setDvar("healthbar", !getDvarInt("healthbar")); break;
             case "!timer": setDvar("timer", msg[1]); break;
-            case "!cherry": setDvar("cherry", !getDvarInt("cherry")); break;
-            case "!perkrng": setDvar("perkrng", !getDvarInt("perkrng")); break;
-            case "!lives": setDvar("lives", !getDvarInt("lives")); break;
-            case "!drops": level.remove_drops = !level.remove_drops; player iprintln("Drops removed"); break;
-            case "!shield": level.shield = !level.shield; break;
+            case "!cherry":
+				setDvar("cherry", !getDvarInt("cherry"));
+				if(getDvarInt("cherry"))
+					player iprintln("You will spawn with electric cherry");
+				else
+					player iprintln("You will not spawn with electric cherry");
+			break;
+            case "!perkrng":
+				setDvar("perkrng", !getDvarInt("perkrng"));
+			break;
+            case "!lives": 
+				setDvar("lives", !getDvarInt("lives"));
+				if(getDvarInt("lives"))
+					player iprintln("Infinite lives deactivated");
+				else
+					player iprintln("Infinite lives activated");
+			break;
+            case "!drops":
+				setDvar("remove_drops", !getDvarInt("remove_drops"));
+				if(getDvarInt("remove_drops"))
+					player iprintln("Drops will no longer spawn");
+				else
+					player iprintln("Drops will spawn");
+				break;
+            case "!shield": 
+				setDvar("shield", !getDvarInt("shield"));
+				if(getDvarInt("shield"))
+					player iprintln("restart the match to spawn with shield");
+				else
+					player iprintln("restart the match to spawn without shield");
+			break;
         }
     }
 }

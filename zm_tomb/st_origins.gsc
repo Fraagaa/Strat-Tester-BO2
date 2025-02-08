@@ -46,11 +46,14 @@ init()
     thread wait_for_players();
     
 	flag_wait("initial_blackscreen_passed");
-	level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
-    foreach(player in level.players)
-        for(i = 0; i < 6; i++)
-            player maps\mp\zombies\_zm_challenges::increment_stat( "zc_zone_captures" );
-    takecraftableparts( "" );
+	if(getDvarInt("shield"))
+	{
+		level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
+		foreach(player in level.players)
+			for(i = 0; i < 6; i++)
+				player maps\mp\zombies\_zm_challenges::increment_stat( "zc_zone_captures" );
+	}
+	takecraftableparts( "" );
     thread placeStaffsInChargers();
 }
 

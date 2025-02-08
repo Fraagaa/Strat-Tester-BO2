@@ -19,13 +19,6 @@
 #include maps\mp\zombies\_zm_craftables;
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_blockers;
-#include maps\mp\zm_tomb_vo;
-#include maps\mp\zm_tomb_main_quest;
-#include maps\mp\zm_tomb_utility;
-#include maps\mp\zm_tomb_craftables;
-#include maps\mp\zm_tomb_challenges;
-#include maps\mp\zm_tomb_capture_zones;
-
 init()
 {
 	level thread spawn_buildable_trigger((1879, 1354, 3034), "equip_springpad_zm", "^3Press &&1 for ^5Springpad", 0);

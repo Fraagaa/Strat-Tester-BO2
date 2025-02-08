@@ -19,19 +19,13 @@
 #include maps\mp\zombies\_zm_craftables;
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_blockers;
-#include maps\mp\zm_tomb_vo;
-#include maps\mp\zm_tomb_main_quest;
-#include maps\mp\zm_tomb_utility;
-#include maps\mp\zm_tomb_craftables;
-#include maps\mp\zm_tomb_challenges;
-#include maps\mp\zm_tomb_capture_zones;
 #include maps\mp\zm_nuked_perks;
 
 
 init()
 {
-    level thread checkpaplocation();
     thread bring_perks();
+    level thread checkpaplocation();
 }
 
 bring_perks()

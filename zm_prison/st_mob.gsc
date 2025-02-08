@@ -19,20 +19,13 @@
 #include maps\mp\zombies\_zm_craftables;
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_blockers;
-#include maps\mp\zm_tomb_vo;
-#include maps\mp\zm_tomb_main_quest;
-#include maps\mp\zm_tomb_utility;
-#include maps\mp\zm_tomb_craftables;
-#include maps\mp\zm_tomb_challenges;
-#include maps\mp\zm_tomb_capture_zones;
 
 init()
 {
 	flag_wait("initial_blackscreen_passed");
 	level thread spawn_buildable_trigger((3366, 9406, 1336), "alcatraz_shield_zm", "^3Press &&1 for ^5Shield"); // shield
-	level waittill( "connected" , player);
-	player thread speeddoor();
-	player thread infinite_afterlifes();
+	level.players[0] thread speeddoor();
+	level.players[0] thread infinite_afterlifes();
 }
 
 speeddoor()
