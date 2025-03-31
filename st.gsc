@@ -21,29 +21,30 @@
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_blockers;
 #include maps\mp\zombies\_zm_powerups;
+#include maps\mp\zombies\_zm_spawner;
+#include maps\mp\gametypes_zm\_zm_gametype;
+
+
+
+
+#include maps\mp\zombies\_zm_audio_announcer;
 
 main()
 {
 	replaceFunc(maps\mp\animscripts\zm_utility::wait_network_frame, ::base_game_network_frame);
 	replaceFunc(maps\mp\zombies\_zm_utility::wait_network_frame, ::base_game_network_frame);
-	replaceFunc(maps\mp\zombies\_zm_powerups::get_next_powerup, ::get_next_powerup);
+	replaceFunc(maps\mp\zombies\_zm_spawner::zombie_can_drop_powerups, ::zombie_can_drop_powerups);
 }
 
-
-get_next_powerup()
+zombie_can_drop_powerups(zombie)
 {
-	while(getDvarInt("remove_drops"))
-		wait 1;
-    powerup = level.zombie_powerup_array[level.zombie_powerup_index];
-    level.zombie_powerup_index++;
+    if ( is_tactical_grenade( zombie.damageweapon ) || !flag( "zombie_drop_powerups" ) )
+        return false;
 
-    if ( level.zombie_powerup_index >= level.zombie_powerup_array.size )
-    {
-        level.zombie_powerup_index = 0;
-        randomize_powerups();
-    }
+    if ( isdefined( zombie.no_powerups ) && zombie.no_powerups )
+        return false;
 
-    return powerup;
+    return !getDvarInt("remove_drops");
 }
 
 init()
@@ -56,10 +57,6 @@ init()
 	thread enable_cheats();
 	level thread readChat();
     thread wait_for_players();
-	if(getDvar("remove_drops") == "")
-		setDvar("remove_drops", false);
-	if(getDvar("shield") == "")
-		setDvar("shield", false);
     
 	flag_wait("initial_blackscreen_passed");
 	level thread openAllDoors();
@@ -71,7 +68,7 @@ wait_for_players()
 {
     while(true)
     {
-        level waittill( "connected" , player);
+        level waittill("connected" , player);
         player thread connected_st();
         player thread fraga_connected();
     }
@@ -91,26 +88,28 @@ fraga_connected()
 connected_st()
 {
     self endon( "disconnect" );
+	self waittill("spawned_player");
 
     while(true)
     {
-        self waittill( "spawned_player" );
-        self iprintln("^6Strat Tester");
-        self iprintln("^5Made by BoneCrusher");
-		self thread scanweapons();
-		self thread health_bar_hud();
-        self.score = 1000000;
-
-        self thread zone_hud();
-        self thread zombie_remaining_hud();
-
-        self thread give_weapons_on_spawn();
-        self thread give_perks_on_spawn();
-        self thread give_perks_on_revive();
-
-		self thread st_sph();
-
+		if(!isdefined(self.zone_hud))
+		{
+			self iprintln("^6Strat Tester");
+			self iprintln("^5Made by BoneCrusher");
+			self thread scanweapons();
+			self thread health_bar_hud();
+			self thread zone_hud();
+			self thread zombie_remaining_hud();
+			self thread st_sph();
+			if(!isdefined(self.zone_hud))
+				self.zone_hud = true;
+		}
+		self.score = 1000000;
+		self thread give_weapons_on_spawn();
+		self thread give_perks_on_spawn();
+		self thread give_perks_on_revive();
         wait 0.05;
+		self waittill("spawned_player");
     }
 }
 
@@ -1465,8 +1464,9 @@ setDvars()
     setdvar("sv_cheats", 0 );
     setdvar("player_strafeSpeedScale", 1 );
     setdvar("player_backSpeedScale", 1 );
-    setdvar("r_dof_enable", 0 );    
-	createDvar("tank", 0); 
+    setdvar("r_dof_enable", 0 );
+	createDvar("shield", 0); 
+	createDvar("remove_drops", 0); 
 	createDvar("setupBuried", 1); 
 	createDvar("depart", 1);
 	createDvar("zone", 1);
@@ -1485,6 +1485,8 @@ setDvars()
 	createDvar("timer", 1);
 	createDvar("cherry", 1);
 	createDvar("lives", 1);
+	createDvar("busloc", 0);
+	createDvar("bustimer", 0);
 	flag_wait("initial_blackscreen_passed");
     level.start_time = int(gettime() / 1000);
 }
@@ -1697,13 +1699,15 @@ readchat()
     while (true) 
     {
         level waittill("say", message, player);
-        msg = strtok(message, " ");
+        msg = strtok(tolower(message), " ");
 
         if(msg[0][0] != "!")
             continue;
 
         switch(msg[0])
         {
+            case "!endround": endRound(true); player iprintln("Ending current round"); break;
+            case "!killhorde": endRound(false); player iprintln("Killing current horde"); break;
             case "!tpc": tpc_player(player, msg[1], msg[3], msg[2]); break;
             case "!tp": tpl_player(player, msg[1]); break;
             case "!power":
@@ -1780,8 +1784,9 @@ readchat()
 				if(getDvarInt("shield"))
 					player iprintln("restart the match to spawn with shield");
 				else
-					player iprintln("restart the match to spawn without shield");
-			break;
+					player iprintln("restart the match to spawn without shield"); break;
+            case "!busloc": setDvar("busloc", !getDvarInt("busloc")); break;
+            case "!bustimer": setDvar("bustimer", !getDvarInt("bustimer")); break;
         }
     }
 }
@@ -1806,9 +1811,11 @@ tpl_player(player, location)
 			case "town": pos = (1152, -717, -55); ang = (0, 45, 0); break;
 			case "depot": pos = (-7384, 4693, -63); ang = (0, 18, 0); break;
 			case "tunel": pos = (-11814, -1903, 228); ang = (0, -60, 0); break;
-			case "dinner": pos = (-5012, -6694, -60); ang = (0, -127, 0); break;
-			case "natch": pos = (13840, -261, -188); ang = (0, -108, 0); break;
+			case "diner": pos = (-5012, -6694, -60); ang = (0, -127, 0); break;
+			case "nacht": pos = (13840, -261, -188); ang = (0, -108, 0); break;
 			case "power": pos = (12195, 8266, -751); ang = (0, -90, 0); break;
+			case "ak": pos = (11200, 7745, -564); ang = (0, -108, 0); break;
+			case "ware": pos = (10600, 8272, -400); ang = (0, -108, 0); break;
 			case "bus": pos = level.the_bus.origin; ang = level.the_bus.angles; break;
 			default: return;
 		}
@@ -1895,4 +1902,48 @@ trap_timer()
 		}
 		wait 0.1;	
 	}
+}
+
+endRound(round)
+{
+	if(round) level.zombie_total = 0;
+	
+	location = level.players[0].origin;
+	player_team = level.players[0].team;
+    zombies = getaiarray( level.zombie_team );
+    zombies = arraysort( zombies, location );
+    zombies_nuked = [];
+
+    for ( i = 0; i < zombies.size; i++ )
+    {
+        if ( isdefined( zombies[i].ignore_nuke ) && zombies[i].ignore_nuke )
+            continue;
+
+        if ( isdefined( zombies[i].marked_for_death ) && zombies[i].marked_for_death )
+            continue;
+
+        if ( isdefined( zombies[i].nuke_damage_func ) )
+        {
+            zombies[i] thread [[ zombies[i].nuke_damage_func ]]();
+            continue;
+        }
+
+        if ( is_magic_bullet_shield_enabled( zombies[i] ) )
+            continue;
+
+        zombies[i].marked_for_death = 1;
+        zombies[i].nuked = 1;
+        zombies_nuked[zombies_nuked.size] = zombies[i];
+    }
+
+    for ( i = 0; i < zombies_nuked.size; i++ )
+    {
+        if ( !isdefined( zombies_nuked[i] ) )
+            continue;
+
+        if ( is_magic_bullet_shield_enabled( zombies_nuked[i] ) )
+            continue;
+
+        zombies_nuked[i] dodamage( zombies_nuked[i].health + 666, zombies_nuked[i].origin );
+    }
 }

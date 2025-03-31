@@ -5,6 +5,8 @@
 ## Chat Commands
 - `!tpc` teleports player to desired coordinates
 - `!tp` teleports player to desired location
+- `!endround` ends current round
+- `!killhorde` kills current horde
 - `!drops` enables drops
 - `!power` toggles between power and no power
 - `!boards` toggles opening window's boards
@@ -13,6 +15,8 @@
 - `!perks` toggles spawning with perks / reviving with perks
 - `!round` changes initial round
 - `!depart` changes bus depart time on farm
+- `!busloc` displays the bus location
+- `!bustimer` displays a bus timer
 - `!delay` changes delat at the start of the round
 - `!buried` toggles buildable setup on buried
 - `!zone` toggles zone name
@@ -33,7 +37,7 @@
 ## TP locations for !tp
 | **Map**     | **Tranzit**            | **Die Rise**   | **MOB**     | **Buried**   | **Origins**      |
 |--------------|------------------------|----------------|-------------|--------------|------------------|
-| **Location**| `farm` `town` `dinner` `tunel` `depot` `power` `bus` `natch` | `shaft` `tramp` | `cafe` `cage` `fans` `dt` | `saloon` `jug` `tunel` | `church` `tcp` `gen2` `tank` |
+| **Location**| `farm` `town` `dinner` `tunel` `depot` `power` `bus` `nacht` `ak` `ware` | `shaft` `tramp` | `cafe` `cage` `fans` `dt` | `saloon` `jug` `tunel` | `church` `tcp` `gen2` `tank` |
 
 ## General changed
 - Perks are given on spawn
@@ -63,6 +67,8 @@
 ## Changes by map
 ### Tranzit
 - Display at the top left of the screen indicating the ammount of time it takes for the bus to depart from farm.
+- Added a third timer for the bus (use !bustimer)
+- Added a display for the bus location (use !busloc)
 
 ### Nuketown
 - All perks fall from the sky at the start of the game
