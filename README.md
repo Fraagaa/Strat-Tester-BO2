@@ -7,6 +7,7 @@
 - `!tp` teleports player to desired location
 - `!endround` ends current round
 - `!killhorde` kills current horde
+- `!sph` toggles sph meter
 - `!drops` enables drops
 - `!power` toggles between power and no power
 - `!boards` toggles opening window's boards
@@ -38,6 +39,16 @@
 | **Map**     | **Tranzit**            | **Die Rise**   | **MOB**     | **Buried**   | **Origins**      |
 |--------------|------------------------|----------------|-------------|--------------|------------------|
 | **Location**| `farm` `town` `dinner` `tunel` `depot` `power` `bus` `nacht` `ak` `ware` | `shaft` `tramp` | `cafe` `cage` `fans` `dt` | `saloon` `jug` `tunel` | `church` `tcp` `gen2` `tank` |
+
+## Box move locations
+| **Map**       | **Location**                       |
+|-----------|--------------------------------|
+| **NukeTown**  | bunker, yellow, garden, green, garage |
+| **Tranzit**   | dt, qr, farm, power, diner, depot |
+| **Mob**       | dt, cafe, roof, dock, office   |
+| **Die Rise** | roof, m16, bar                 |
+| **Origins**   | gen1, gen2, gen3, gen4, gen5, gen6 |
+
 
 ## General changed
 - Perks are given on spawn
