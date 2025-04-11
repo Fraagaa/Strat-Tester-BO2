@@ -43,11 +43,11 @@
 ## Box move locations
 | **Map**       | **Location**                       |
 |-----------|--------------------------------|
-| **NukeTown**  | bunker, yellow, garden, green, garage |
-| **Tranzit**   | dt, qr, farm, power, diner, depot |
-| **Mob**       | dt, cafe, roof, dock, office   |
-| **Die Rise** | roof, m16, bar                 |
-| **Origins**   | gen1, gen2, gen3, gen4, gen5, gen6 |
+| **NukeTown**  | `bunker` `yellow` `garden` `green` `garage` |
+| **Tranzit**   | `dt` `qr` `farm` `power` `diner` `depot` |
+| **Mob**       | `dt` `cafe` `roof` `dock` `office`   |
+| **Die Rise** | `roof` `m16` `bar`                 |
+| **Origins**   | `gen1` `gen2` `gen3` `gen4` `gen5` `gen6` |
 
 
 ## General changed
