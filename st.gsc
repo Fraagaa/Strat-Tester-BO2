@@ -21,12 +21,8 @@
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_blockers;
 #include maps\mp\zombies\_zm_powerups;
-#include maps\mp\zombies\_zm_spawner;
+#include maps\mp\zombies\_zm_magicbox;
 #include maps\mp\gametypes_zm\_zm_gametype;
-
-
-
-
 #include maps\mp\zombies\_zm_audio_announcer;
 
 main()
@@ -36,19 +32,10 @@ main()
 	replaceFunc(maps\mp\zombies\_zm_spawner::zombie_can_drop_powerups, ::zombie_can_drop_powerups);
 }
 
-zombie_can_drop_powerups(zombie)
-{
-    if ( is_tactical_grenade( zombie.damageweapon ) || !flag( "zombie_drop_powerups" ) )
-        return false;
-
-    if ( isdefined( zombie.no_powerups ) && zombie.no_powerups )
-        return false;
-
-    return !getDvarInt("remove_drops");
-}
-
 init()
 {
+    if(!isDefined(level.total_chest_accessed))
+        level.total_chest_accessed = 0;
 	level thread setdvars();
 	level thread fix_highround();
     level thread turn_on_power();
@@ -1102,6 +1089,7 @@ get_zone_name()
 			case "zone_amb_cornfield": name = "Cornfield"; break;
 			case "zone_cornfield_prototype": name = "Nacht"; break;
 			case "zone_trans_7": name = "Upper Fog Before Power"; break;
+			case "zone_pow_ext1": name = "zone_pow_ext1"; break;
 			case "zone_trans_pow_ext1": name = "Fog Before Power"; break;
 			case "zone_pow": name = "Outside Power Station"; break;
 			case "zone_prr": name = "Power Station"; break;
@@ -1114,6 +1102,7 @@ get_zone_name()
 			case "zone_tow": name = "Center Town"; break;
 			case "zone_town_east": name = "East Town"; break;
 			case "zone_town_west": name = "West Town"; break;
+			case "zone_town_west2": name = "West Town2"; break;
 			case "zone_town_south": name = "South Town"; break;
 			case "zone_bar": name = "Bar"; break;
 			case "zone_town_barber": name = "Bookstore"; break;
@@ -1466,6 +1455,7 @@ setDvars()
     setdvar("player_backSpeedScale", 1 );
     setdvar("r_dof_enable", 0 );
 	createDvar("shield", 0); 
+	createDvar("avg", 1); 
 	createDvar("remove_drops", 0); 
 	createDvar("setupBuried", 1); 
 	createDvar("depart", 1);
@@ -1710,6 +1700,7 @@ readchat()
             case "!killhorde": endRound(false); player iprintln("Killing current horde"); break;
             case "!tpc": tpc_player(player, msg[1], msg[3], msg[2]); break;
             case "!tp": tpl_player(player, msg[1]); break;
+            case "!sph": player.sph.alpha = !player.sph.alpha; break;
             case "!power":
 				setDvar("power", !getDvarInt("power"));
 				if(getDvarInt("power"))
@@ -1787,8 +1778,90 @@ readchat()
 					player iprintln("restart the match to spawn without shield"); break;
             case "!busloc": setDvar("busloc", !getDvarInt("busloc")); break;
             case "!bustimer": setDvar("bustimer", !getDvarInt("bustimer")); break;
+			case "!nuke": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("nuke", player.origin + (0, 0, 40)); break;
+			case "!max": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("full_ammo", player.origin + (0, 0, 40)); break;
+			case "!boxmove": boxmove(msg[1]); break;
         }
     }
+}
+
+boxmove(location)
+{
+	switch(location)
+	{
+		case "bunker": if(!isnuketown()) return; location = "start_chest1"; break;
+		case "yellow": if(!isnuketown()) return; location = "start_chest2"; break;
+		case "garden": if(!isnuketown()) return; location = "culdesac_chest"; break;
+		case "green": if(!isnuketown()) return; location = "oh1_chest"; break;
+		case "garage": if(!isnuketown()) return; location = "oh2_chest"; break;
+		case "dt": if(!istranzit() && !istown() && !ismob()) return; if(istranzit() || istown()) location = "town_chest_2"; if(ismob()) location = "citadel_chest"; break;
+		case "qr": if(!istranzit() && !istown()) return; location = "town_chest"; break;
+		case "farm": if(!istranzit()) return; location = "farm_chest"; break;
+		case "power": if(!istranzit()) return; location = "pow_chest"; break;
+		case "diner": if(!istranzit()) return; location = "start_chest"; break;
+		case "depot": if(!istranzit()) return; location = "depot_chest"; break;
+		case "cafe": if(!ismob()) return; location = "cafe_chest"; break;
+		case "roof": if(!ismob() && !isdierise()) return; if(!isdierise()) location = "roof_chest"; else location = "ob6_chest"; break;
+		case "dock": if(!ismob()) return; location = "dock_chest"; break;
+		case "office": if(!ismob()) return; location = "start_chest"; break;
+		case "gen1": if(!isorigins()) return; location = "bunker_start_chest"; break;
+		case "gen2": if(!isorigins()) return; location = "bunker_tank_chest"; break;
+		case "gen3": if(!isorigins()) return; location = "bunker_cp_chest"; break;
+		case "gen4": if(!isorigins()) return; location = "nml_open_chest"; break;
+		case "gen5": if(!isorigins()) return; location = "nml_farm_chest"; break;
+		case "gen6": if(!isorigins()) return; location = "village_church_chest"; break;
+		case "m16": if(!isdierise()) return; location = "start_chest"; break;
+		case "bar": if(!isdierise()) return; location = "gb1_chest"; break;
+		default: break;
+	}
+    if(isDefined(level._zombiemode_custom_box_move_logic))
+        kept_move_logic = level._zombiemode_custom_box_move_logic;
+
+    level._zombiemode_custom_box_move_logic = ::force_next_location;
+
+    foreach (chest in level.chests)
+    {
+        if (!chest.hidden && chest.script_noteworthy == location)
+        {
+            if (isDefined(kept_move_logic))
+                level._zombiemode_custom_box_move_logic = kept_move_logic;
+            return;
+        }
+        if (!chest.hidden)
+        {
+            level.chest_min_move_usage = 8;
+            level.chest_name = location;
+
+            flag_set("moving_chest_now");
+            chest thread fast_chest_move();
+
+            wait 0.05;
+            level notify("weapon_fly_away_start");
+            wait 0.05;
+            level notify("weapon_fly_away_end");
+
+            break;
+        }
+    }
+
+    while (flag("moving_chest_now"))
+        wait 0.05;
+
+    if (isDefined(kept_move_logic))
+        level._zombiemode_custom_box_move_logic = kept_move_logic;
+
+    if (isDefined(level.chest_name) && isDefined(level.dig_magic_box_moved))
+        level.dig_magic_box_moved = 0;
+
+    level.chest_min_move_usage = 4;
+}
+
+
+force_next_location()
+{
+    for (i = 0; i < level.chests.size; i++)
+        if (level.chests[i].script_noteworthy == level.chest_name)
+            level.chest_index = i;
 }
 
 tpc_player(player, x, z, y)
@@ -1946,4 +2019,36 @@ endRound(round)
 
         zombies_nuked[i] dodamage( zombies_nuked[i].health + 666, zombies_nuked[i].origin );
     }
+}
+
+fast_chest_move()
+{
+    if ( isdefined( self.zbarrier ) )
+        self hide_chest( 1 );
+
+    level.verify_chest = 0;
+
+    if ( isdefined( level._zombiemode_custom_box_move_logic ) )
+        [[ level._zombiemode_custom_box_move_logic ]]();
+    else
+        default_box_move_logic();
+
+    if ( isdefined( level.chests[level.chest_index].box_hacks["summon_box"] ) )
+        level.chests[level.chest_index] [[ level.chests[level.chest_index].box_hacks["summon_box"] ]]( 0 );
+
+    playfx( level._effect["poltergeist"], level.chests[level.chest_index].zbarrier.origin );
+    level.chests[level.chest_index] show_chest();
+    flag_clear( "moving_chest_now" );
+    self.zbarrier.chest_moving = 0;
+}
+
+zombie_can_drop_powerups(zombie)
+{
+    if ( is_tactical_grenade( zombie.damageweapon ) || !flag( "zombie_drop_powerups" ) )
+        return false;
+
+    if ( isdefined( zombie.no_powerups ) && zombie.no_powerups )
+        return false;
+
+    return !getDvarInt("remove_drops");
 }
