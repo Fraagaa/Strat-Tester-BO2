@@ -13,6 +13,7 @@
 - `!fog`           toggles fog
 - `!healthbar`     toggles healthbar
 - `!killhorde`     kills current horde
+- `!notarget`      zombies will ignore player
 - `!perks`         toggles spawning with perks / reviving with perks
 - `!power`         toggles between power and no power
 - `!remaining`     toggles zombie counter
