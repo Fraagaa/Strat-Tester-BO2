@@ -666,8 +666,8 @@ readchat()
             case "!shield": shieldcase(); break;
             case "!wm": wmcase(); break;
             case "!staff": staffcase(); break;
-            case "!endround": case "!killhorde": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
-            default: strattesterprint("Unknown command"); break;
+            case "!endround": case "!killhorde": case "!notarget": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
+            default: strattesterprint("Unknown command ^1" + message); break;
         }
     }
 }
