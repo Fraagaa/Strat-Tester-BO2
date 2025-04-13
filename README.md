@@ -24,7 +24,7 @@
 - `!weapons`       toggles spawning with weapons  
 - `!zone`          toggles zone name  
 
-# Tranzit
+### Tranzit
 - `!denizen`     toggles denizens spawns
 - `!buson / !busoff` stops/starts the bus
 - `!perma`       awards perman perks to player
@@ -32,16 +32,16 @@
 - `!busloc`      displays the bus location
 - `!bustimer`    displays a bus timer
 
-# Town
+### Town
 - `!jug`         changes game set up in town
 
-# Mob
+### Mob
 - `!traptimer`   toggles traptimer on mob
 
-# Buried
+### Buried
 - `!buried`      toggles buildable setup on buried
 
-# Origins
+### Origins
 - `!cherry`      toggles getting cherry in origins  
 - `!lives`       toggles infinite afterlives  
 - `!shield`      toggles starting with shield equipped and built  
