@@ -5,24 +5,24 @@
 ## Chat Commands
 
 ### General
-- `!boards`        toggles opening window's boards  
+- `!boards`        toggles opening window's boards
 - `!delay`         changes delat at the start of the round
-- `!doors`         toggles oppening all necesary doors  
-- `!drops`         enables drops  
-- `!endround`      ends current round  
-- `!fog`           toggles fog  
-- `!healthbar`     toggles healthbar  
-- `!killhorde`     kills current horde  
-- `!perks`         toggles spawning with perks / reviving with perks  
-- `!power`         toggles between power and no power  
-- `!remaining`     toggles zombie counter  
-- `!round`         changes initial round  
-- `!sph`           toggles seconds per horde display  
-- `!timer`         changes timer position or hides it  
-- `!tp`            teleports player to desired location  
-- `!tpc`           teleports player to desired coordinates  
-- `!weapons`       toggles spawning with weapons  
-- `!zone`          toggles zone name  
+- `!doors`         toggles oppening all necesary doors
+- `!drops`         enables drops
+- `!endround`      ends current round
+- `!fog`           toggles fog
+- `!healthbar`     toggles healthbar
+- `!killhorde`     kills current horde
+- `!perks`         toggles spawning with perks / reviving with perks
+- `!power`         toggles between power and no power
+- `!remaining`     toggles zombie counter
+- `!round`         changes initial round
+- `!sph`           toggles seconds per horde display
+- `!timer`         changes timer position or hides it
+- `!tp`            teleports player to desired location
+- `!tpc`           teleports player to desired coordinates
+- `!weapons`       toggles spawning with weapons
+- `!zone`          toggles zone name
 
 ### Tranzit
 - `!denizen`     toggles denizens spawns
@@ -37,19 +37,20 @@
 
 ### Mob
 - `!traptimer`   toggles traptimer on mob
+- `!shield`      toggles starting with shield equipped and built
+- `!lives`       toggles infinite afterlives
 
 ### Buried
 - `!buried`      toggles buildable setup on buried
 
 ### Origins
-- `!cherry`      toggles getting cherry in origins  
-- `!lives`       toggles infinite afterlives  
-- `!shield`      toggles starting with shield equipped and built  
-- `!stomp`       toggles stomp counter on origins  
-- `!tank`        toggles tank kill counter on origins  
-- `!templars`    starts a templar round if more than 3 generator are on  
-- `!tumble`      toggles tumble counter on origins  
-- `!wm`          toggles getting war machine on origins  
+- `!cherry`      toggles getting cherry in origins
+- `!shield`      toggles starting with shield equipped and built
+- `!stomp`       toggles stomp counter on origins
+- `!tank`        toggles tank kill counter on origins
+- `!templars`    starts a templar round if more than 3 generator are on
+- `!tumble`      toggles tumble counter on origins
+- `!wm`          toggles getting war machine on origins
 
 
 ## TP locations for !tp
