@@ -4,7 +4,7 @@
 
 ## Chat Commands
 
-# General
+### General
 - `!boards`        toggles opening window's boards  
 - `!delay`         changes delat at the start of the round
 - `!doors`         toggles oppening all necesary doors  
