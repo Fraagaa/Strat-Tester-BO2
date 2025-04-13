@@ -12,9 +12,22 @@
 #include maps\mp\zombies\_zm_weapons;
 #include maps\mp\zm_transit_bus;
 
+#include scripts\zm\st;
+
 main()
 {
 	replacefunc(maps\mp\zm_transit_bus::busschedule, ::print_busschedule);
+	replaceFunc(maps\mp\zombies\_zm_ai_screecher::screecher_spawning_logic, ::screecher_spawning_logic);
+}
+
+init()
+{
+    level thread readChat();
+
+    if(!istranzit())
+        level thread raygun_counter();
+
+    if(istranzit())
     while(true)
     {
         level waittill("connecting", player);
@@ -23,14 +36,7 @@ main()
     }
 }
 
-init()
-{
-    if(!(level.script == "zm_transit" && level.scr_zm_map_start_location == "transit" && level.scr_zm_ui_gametype_group == "zclassic"))
-    {
-        level thread boxhits();
-        level thread raygun_counter();
-    }
-}
+
 busloc()
 {
 	level.busloc.hidewheninmenu = true;
@@ -308,4 +314,352 @@ raygun_counter()
         }
         wait 0.1;
     }
+}
+
+
+readchat() 
+{
+    self endon("end_game");
+    while (true) 
+    {
+        level waittill("say", message, player);
+        msg = strtok(tolower(message), " ");
+
+        if(msg[0][0] != "!")
+            continue;
+
+        switch(msg[0])
+        {
+            case "!denizen": denizencase(); break;
+			case "!busoff": case "!buson": busoffcase(); break;
+            case "!depart": departcase(msg[1]); break;
+            case "!busloc": setDvar("busloc", !getDvarInt("busloc")); break;
+            case "!bustimer": setDvar("bustimer", !getDvarInt("bustimer")); break;
+            case "!perma": permacase(player); break;
+            case "!jug": jugcase(); break;
+            case "!endround": case "!killhorde": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
+            default: strattesterprint("Unknown command"); break;
+        }
+    }
+}
+
+departcase(time)
+{
+    setDvar("depart", time);
+    if(time >= 40 && time <= 180)
+        strattesterprint("Next game, bus will stop for " + time + " seconds on farm.");
+    else
+        strattesterprint("Bad input, try a number between 40 and 180");
+}
+
+jugcase()
+{
+    setDvar("jug", !getDvarInt("jug"));
+    if(getDvarInt("jug"))
+        strattesterprint("You will spawn with jug instead of speed cola");
+    else
+        strattesterprint("You will spawn with speed cola instead of speed jug");
+}
+
+istranzit()
+{
+	return (level.script == "zm_transit" && level.scr_zm_map_start_location == "transit" && level.scr_zm_ui_gametype_group == "zclassic");
+}
+
+
+busoffcase()
+{
+	if(!istranzit())
+		return;
+	if(!isdefined(level.the_bus.off))
+		level.the_bus.off = false;
+	if(level.the_bus.targetspeed != 0)
+	{
+		strattesterprint("Stopping Bus");
+		level.the_bus.targetspeed = 0;
+	}
+	else
+	{
+		strattesterprint("Starting Bus");
+		level.the_bus.targetspeed = 10;
+	}
+}
+
+permacase(player)
+{
+    strattesterprint("Awarding perman perks to " + player.name);
+    player thread award_permaperks_safe();
+}
+
+denizencase()
+{
+    if(!istranzit())
+        return;
+    if(level.zombie_ai_limit_screecher == 2)
+    {
+        strattesterprint("Denizens wont spwan");
+        level.zombie_ai_limit_screecher = 0;
+    }
+    else
+    {
+        strattesterprint("Denizens will spwan");
+        level.zombie_ai_limit_screecher = 2;
+    }
+}
+
+screecher_spawning_logic()
+{
+    level endon( "intermission" );
+
+    if ( level.intermission )
+        return;
+
+    if ( level.screecher_spawners.size < 1 )
+        return;
+
+    while ( true )
+    {
+        while ( !isdefined( level.zombie_screecher_locations ) || level.zombie_screecher_locations.size <= 0 )
+            wait 0.1;
+
+        while ( level.zombie_screecher_count >= level.zombie_ai_limit_screecher )
+            wait 0.1;
+
+        while ( getdvarint( #"scr_screecher_ignore_player" ) )
+            wait 0.1;
+
+        if (!flag("spawn_zombies"))
+            flag_wait( "spawn_zombies" );
+
+        valid_players_in_screecher_zone = 0;
+        valid_players = [];
+
+        while ( valid_players_in_screecher_zone <= 0 )
+        {
+            players = getplayers();
+            valid_players_in_screecher_zone = 0;
+
+            foreach (player in level.players)
+            {
+                if ( is_player_valid( player ) && player_in_screecher_zone( player ) && !isdefined( player.screecher ) )
+                {
+                    valid_players_in_screecher_zone++;
+                    valid_players[valid_players.size] = player;
+                }
+            }
+
+            if ( players.size == 1 )
+            {
+                if ( is_player_valid( players[0] ) && !player_in_screecher_zone( players[0] ) )
+                    level.spawn_delay = 1;
+            }
+
+            wait 0.1;
+        }
+
+        if ( !isdefined( level.zombie_screecher_locations ) || level.zombie_screecher_locations.size <= 0 )
+            continue;
+
+        valid_players = array_randomize( valid_players );
+        player_left_zone = 0;
+
+        if ( isdefined( level.spawn_delay ) && level.spawn_delay )
+        {
+            spawn_points = get_array_of_closest( valid_players[0].origin, level.zombie_screecher_locations );
+            spawn_point = undefined;
+
+            if ( spawn_points.size >= 3 )
+                spawn_point = spawn_points[2];
+            else if ( spawn_points.size >= 2 )
+                spawn_point = spawn_points[1];
+            else if ( spawn_points.size >= 1 )
+                spawn_point = spawn_points[0];
+
+            if ( isdefined( spawn_point ) )
+                playsoundatposition("zmb_vocals_screecher_spawn", spawn_point.origin);
+
+            delay_time = gettime() + 5000;
+            now_zone = getent( "screecher_spawn_now", "targetname" );
+
+            while ( gettime() < delay_time )
+            {
+                in_zone = 0;
+
+                if (valid_players[0] istouching(now_zone))
+                    break;
+
+                if (!is_player_valid( valid_players[0]))
+                    break;
+
+                if (player_in_screecher_zone(valid_players[0]))
+                    in_zone = 1;
+
+                if (!in_zone)
+                {
+                    player_left_zone = 1;
+                    level.spawn_delay = 1;
+                    break;
+                }
+                wait 0.1;
+            }
+        }
+
+        if ( isdefined( player_left_zone ) && player_left_zone )
+            continue;
+
+        level.spawn_delay = 0;
+        spawn_points = get_array_of_closest( valid_players[0].origin, level.zombie_screecher_locations );
+        spawn_point = undefined;
+
+        if ( !isdefined( spawn_points ) || spawn_points.size == 0 )
+        {
+            wait 0.1;
+            continue;
+        }
+
+        if ( !isdefined( level.last_spawn ) )
+        {
+            level.last_spawn_index = 0;
+            level.last_spawn = [];
+            level.last_spawn[level.last_spawn_index] = spawn_points[0];
+            level.last_spawn_index = 1;
+            spawn_point = spawn_points[0];
+        }
+        else
+        {
+            foreach ( point in spawn_points )
+            {
+                if ( point == level.last_spawn[0] )
+                    continue;
+
+                if ( isdefined( level.last_spawn[1] ) && point == level.last_spawn[1] )
+                    continue;
+
+                spawn_point = point;
+                level.last_spawn[level.last_spawn_index] = spawn_point;
+                level.last_spawn_index++;
+
+                if ( level.last_spawn_index > 1 )
+                    level.last_spawn_index = 0;
+
+                break;
+            }
+        }
+
+        if ( !isdefined( spawn_point ) )
+            spawn_point = spawn_points[0];
+
+        if ( isdefined( level.screecher_spawners ) )
+        {
+            spawner = random( level.screecher_spawners );
+            ai = spawn_zombie( spawner, spawner.targetname, spawn_point );
+        }
+
+        if ( isdefined( ai ) )
+        {
+            ai.spawn_point = spawn_point;
+			strattesterprint("^2Denizen Spawned!");
+            level.zombie_screecher_count++;
+        }
+
+        wait( level.zombie_vars["zombie_spawn_delay"] );
+        wait 0.1;
+    }
+}
+
+strattesterprint(message)
+{
+	foreach(player in level.players)
+		player iprintln("^5[^6Strat Tester^5]^7 " + message);
+}
+
+
+award_permaperks_safe()
+{
+	level endon("end_game");
+	self endon("disconnect");
+
+	while (!isalive(self))
+		wait 0.05;
+
+	wait 0.5;
+    perks_to_process = [];
+    
+    perks_to_process[perks_to_process.size] = permaperk_array("revive");
+    perks_to_process[perks_to_process.size] = permaperk_array("multikill_headshots");
+    perks_to_process[perks_to_process.size] = permaperk_array("perk_lose");
+    perks_to_process[perks_to_process.size] = permaperk_array("jugg", undefined, undefined, 15);
+    perks_to_process[perks_to_process.size] = permaperk_array("flopper", array("zm_buried"));
+    perks_to_process[perks_to_process.size] = permaperk_array("box_weapon", array("zm_highrise", "zm_buried"), array("zm_transit"));
+    perks_to_process[perks_to_process.size] = permaperk_array("cash_back");
+    perks_to_process[perks_to_process.size] = permaperk_array("sniper");
+    perks_to_process[perks_to_process.size] = permaperk_array("insta_kill");
+    perks_to_process[perks_to_process.size] = permaperk_array("pistol_points");
+    perks_to_process[perks_to_process.size] = permaperk_array("double_points");
+
+	foreach (perk in perks_to_process)
+	{
+		if( !(istranzit() && perk == permaperk_array("box_weapon", array("zm_highrise", "zm_buried"), array("zm_transit"))))
+		self resolve_permaperk(perk);
+		wait 0.05;
+	}
+	if(istranzit())
+        level.pers_box_weapon_lose_round = 0;
+
+	wait 0.5;
+	self maps\mp\zombies\_zm_stats::uploadstatssoon();
+}
+
+permaperk_array(code, maps_award, maps_take, to_round)
+{
+	if (!isDefined(maps_award))
+		maps_award = array("zm_transit", "zm_highrise", "zm_buried");
+	if (!isDefined(maps_take))
+		maps_take = [];
+	if (!isDefined(to_round))
+		to_round = 255;
+
+	permaperk = [];
+	permaperk["code"] = code;
+	permaperk["maps_award"] = maps_award;
+	permaperk["maps_take"] = maps_take;
+	permaperk["to_round"] = to_round;
+
+	return permaperk;
+}
+
+resolve_permaperk(perk)
+{
+	wait 0.05;
+
+	perk_code = perk["code"];
+
+	if (isinarray(perk["maps_award"], level.script) && !self.pers_upgrades_awarded[perk_code])
+	{
+		for (j = 0; j < level.pers_upgrades[perk_code].stat_names.size; j++)
+		{
+			stat_name = level.pers_upgrades[perk_code].stat_names[j];
+			stat_value = level.pers_upgrades[perk_code].stat_desired_values[j];
+
+			self award_permaperk(stat_name, perk_code, stat_value);
+		}
+	}
+
+	if (isinarray(perk["maps_take"], level.script) && self.pers_upgrades_awarded[perk_code])
+		self remove_permaperk(perk_code);
+}
+
+
+award_permaperk(stat_name, perk_code, stat_value)
+{
+	flag_set("permaperks_were_set");
+	self.stats_this_frame[stat_name] = 1;
+	self maps\mp\zombies\_zm_stats::set_global_stat(stat_name, stat_value);
+	self playsoundtoplayer("evt_player_upgrade", self);
+}
+
+remove_permaperk(perk_code)
+{
+	self.pers_upgrades_awarded[perk_code] = 0;
+	self playsoundtoplayer("evt_player_downgrade", self);
 }

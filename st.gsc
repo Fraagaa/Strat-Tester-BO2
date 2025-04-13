@@ -1,29 +1,28 @@
-
-#include maps\mp\_utility;
 #include common_scripts\utility;
-#include maps\mp\gametypes_zm\_hud;
-#include maps\mp\gametypes_zm\_hud_util;
-#include maps\mp\gametypes_zm\_hud_message;
+#include maps\mp\_utility;
+#include maps\mp\zm_transit_bus;
 #include maps\mp\gametypes_zm\_globallogic;
-#include maps\mp\gametypes_zm\_weapons;
+#include maps\mp\gametypes_zm\_hud;
+#include maps\mp\gametypes_zm\_hud_message;
+#include maps\mp\gametypes_zm\_hud_util;
+#include maps\mp\gametypes_zm\_zm_gametype;
+#include maps\mp\zombies\_zm;
+#include maps\mp\zombies\_zm_audio;
+#include maps\mp\zombies\_zm_audio_announcer;
+#include maps\mp\zombies\_zm_blockers;
 #include maps\mp\zombies\_zm_buildables;
+#include maps\mp\zombies\_zm_craftables;
 #include maps\mp\zombies\_zm_equipment;
+#include maps\mp\zombies\_zm_magicbox;
+#include maps\mp\zombies\_zm_melee_weapon;
+#include maps\mp\zombies\_zm_perks;
+#include maps\mp\zombies\_zm_powerups;
 #include maps\mp\zombies\_zm_score;
 #include maps\mp\zombies\_zm_stats;
-#include maps\mp\zombies\_zm_utility;
-#include maps\mp\zombies\_zm_weapons;
-#include maps\mp\zombies\_zm_perks;
-#include maps\mp\zombies\_zm_melee_weapon;
-#include maps\mp\zombies\_zm_audio;
 #include maps\mp\zombies\_zm_unitrigger;
+#include maps\mp\zombies\_zm_utility;
 #include maps\mp\zombies\_zm_weap_claymore;
-#include maps\mp\zombies\_zm_craftables;
-#include maps\mp\zombies\_zm;
-#include maps\mp\zombies\_zm_blockers;
-#include maps\mp\zombies\_zm_powerups;
-#include maps\mp\zombies\_zm_magicbox;
-#include maps\mp\gametypes_zm\_zm_gametype;
-#include maps\mp\zombies\_zm_audio_announcer;
+#include maps\mp\zombies\_zm_weapons;
 
 main()
 {
@@ -252,8 +251,14 @@ give_perks_by_map()
 {
     if (isfarm())
         perks = array( "specialty_armorvest", "specialty_fastreload", "specialty_rof", "specialty_quickrevive" );
-    if(istown())
+    if(istown() && !getDvarInt("jug"))
+	{
         perks = array( "specialty_fastreload", "specialty_longersprint", "specialty_rof", "specialty_quickrevive" );
+	}
+	if(istown() && getDvarInt("jug"))
+	{
+        perks = array( "specialty_armorvest", "specialty_longersprint", "specialty_rof", "specialty_quickrevive" );
+	}
     if (istranzit())
         perks = array( "specialty_armorvest", "specialty_longersprint", "specialty_fastreload", "specialty_quickrevive" );
     if(isnuketown())
@@ -295,15 +300,19 @@ give_weapons_on_spawn()
 
     if(isburied())
 	{
+		wait 1;
 		self takeweapon("m1911_zm");
-		if(self == level.players[0])
-			self switchToWeapon( "slowgun_upgraded_zm" );
+		wait 1;
 		self giveweapon_nzv( "raygun_mark2_upgraded_zm" );
 		self giveweapon_nzv( "m1911_upgraded_zm" );
-		self giveweapon_nzv( "slowgun_upgraded_zm" );
 		self giveweapon_nzv( "cymbal_monkey_zm" );
 		self giveweapon_nzv( "claymore_zm" );
 		self giveweapon_nzv( "tazer_knuckles_zm" );
+		if(self == level.players[0])
+		{
+			self giveweapon_nzv( "slowgun_upgraded_zm" );
+			self switchToWeapon( "slowgun_upgraded_zm" );
+		}
 	}
 	if(isdierise())
 	{
@@ -381,15 +390,23 @@ give_weapons_on_spawn()
 			self setactionslot( 3, "weapon", "staff_revive_zm" );
 			self giveweapon( "staff_revive_zm" );
 			self givemaxammo( "staff_revive_zm" );
-			if( cointoss() )
-			{
-				self weapon_give( "staff_air_upgraded_zm", undefined, undefined, 0 );
-				self switchToWeapon( "staff_air_upgraded_zm" );
-			}
-			else
+			if(getDvarInt("staff"))
 			{
 				self weapon_give( "staff_water_upgraded_zm", undefined, undefined, 0 );
 				self switchToWeapon( "staff_water_upgraded_zm" );
+			}
+			else
+			{
+				if(cointoss())
+				{
+					self weapon_give( "staff_air_upgraded_zm", undefined, undefined, 0 );
+					self switchToWeapon( "staff_air_upgraded_zm" );
+				}
+				else
+				{
+					self weapon_give( "staff_water_upgraded_zm", undefined, undefined, 0 );
+					self switchToWeapon( "staff_water_upgraded_zm" );
+				}
 			}
 		}
 		else
@@ -438,6 +455,7 @@ give_weapons_on_spawn()
 		self giveweapon_nzv( "tazer_knuckles_zm" );
 		if(self != level.players[0])
 			giveweapon_nzv( "m1911_upgraded_zm" );
+		
 	}
 	if(istown())
 	{
@@ -1454,11 +1472,9 @@ setDvars()
     setdvar("player_strafeSpeedScale", 1 );
     setdvar("player_backSpeedScale", 1 );
     setdvar("r_dof_enable", 0 );
-	createDvar("shield", 0); 
-	createDvar("avg", 1); 
-	createDvar("remove_drops", 0); 
-	createDvar("setupBuried", 1); 
-	createDvar("depart", 1);
+
+	createDvar("healthbar", 0);
+	createDvar("timer", 1);
 	createDvar("zone", 1);
 	createDvar("remaining", 1);
 	createDvar("weapons", 1);
@@ -1468,15 +1484,34 @@ setDvars()
 	createDvar("boards", 1);
 	createDvar("delay", 60);
 	createDvar("round", 100);
-	createDvar("perkRNG", 1);
-	createDvar("traptimer", 1);
-	createDvar("wm", 0);
-	createDvar("healthbar", 0);
-	createDvar("timer", 1);
-	createDvar("cherry", 1);
-	createDvar("lives", 1);
-	createDvar("busloc", 0);
-	createDvar("bustimer", 0);
+	createDvar("sph", 1);
+	createDvar("remove_drops", 0); 
+
+	if(isorigins() || ismob())
+		createDvar("shield", 0); 
+	if(isorigins())
+	{
+		createDvar("staff", 1); 
+		createDvar("cherry", 1);
+		createDvar("wm", 0);
+	}
+	if(istown())
+		createDvar("jug", 0); 
+	if(issurvivalmap())
+		createDvar("avg", 1);
+	if(isburied())
+		createDvar("setupBuried", 1); 
+	if(istranzit())
+	{
+		createDvar("busloc", 0);
+		createDvar("bustimer", 0);
+		createDvar("depart", 1);
+	}
+	if(ismob())
+	{
+		createDvar("traptimer", 1);
+		createDvar("lives", 1);
+	}
 	flag_wait("initial_blackscreen_passed");
     level.start_time = int(gettime() / 1000);
 }
@@ -1580,38 +1615,43 @@ giveplayerdata()
 	self maps\mp\zombies\_zm_weapons::weapondata_give( self.a_saved_primaries_weapons[2] );
 }
 
-openAllDoors() 
+openAllDoors()
 {
 	if(!getDvarInt("doors"))
 		return;
     setdvar( "zombie_unlock_all", 1 );
     players = get_players();
     zombie_doors = getentarray( "zombie_door", "targetname" );
-
-    for ( i = 0; i < zombie_doors.size; i++ )
+    foreach(door in zombie_doors)
     {
-		if(istown() && zombie_doors[i].origin == (625, -1222, 166))
+		wait 0.1;
+		if(istown() && !getDvarInt("jug") && door.origin == (625, -1222, 166))
 			continue;
-		if(istranzit() && zombie_doors[i].origin[0] > 7000 && zombie_doors[i].origin[0] < 8400)
+		if(istown() && getDvarInt("jug") && door.origin == (1045, -28, 28))
+			continue;
+		if(istown() && getDvarInt("jug") && door.origin == (1113, 469, 8))
+			continue;
+		if(istranzit() && door.origin[0] > 7000 && door.origin[0] < 8400)
 			continue;
 		if(ismob())
 		{
-			if(zombie_doors[i].origin == (-149, 8679, 1166))
+			if(door.origin == (-149, 8679, 1166))
 				continue;
-			if(zombie_doors[i].origin == (2281, 9484, 1564))
+			if(door.origin == (2281, 9484, 1564))
 				continue;
-			if(zombie_doors[i].origin == (1601, 9223, 1482))
+			if(door.origin == (1601, 9223, 1482))
 				continue;
-			if(zombie_doors[i].origin == (2138, 9210, 1375))
+			if(door.origin == (2138, 9210, 1375))
 				continue;
 		}
 		if(isburied())
-			if(zombie_doors[i].origin == (453, -1188, 100) || zombie_doors[i].origin == (-384, -628, 52))
+			if(door.origin == (453, -1188, 100) || door.origin == (-384, -628, 52))
 				continue;
-        zombie_doors[i] notify( "trigger", players[0] );
 
-        if ( is_true( zombie_doors[i].power_door_ignore_flag_wait ) )
-            zombie_doors[i] notify( "power_on" );
+        if ( is_true( door.power_door_ignore_flag_wait ) )
+            door notify( "power_on" );
+			
+        door notify( "trigger", players[0] );
 
         wait 0.05;
     }
@@ -1640,7 +1680,7 @@ st_sph()
 	self.sph.hidewheninmenu = 1;
 	self.sph.x = 2;
 	self.sph.y = 75;
-	self.sph.alpha = 1;
+	self.sph.alpha = getDvarInt("sph");
 	self.sph.label = &"^3SPH:^5 ";
 	self.sph.alignx = "left";
 	self.sph.aligny = "top";
@@ -1669,7 +1709,7 @@ st_sph()
 updateSPH() {
     while (true) 
 	{
-        wait 1;
+        wait 0.1;
         time = gettime() / 1000;
         self.sph.time_elapsed = int(time - self.sph.time_start);
 		self.sph.kills = self.sph.zombies_total_start - (maps\mp\zombies\_zm_utility::get_round_enemy_array().size + level.zombie_total);
@@ -1679,6 +1719,7 @@ updateSPH() {
         else
             self.sph.sph_value = 0;
         self.sph setvalue(self.sph.sph_value);
+		self.sph.alpha = getDvarInt("sph");
     }
 }
 
@@ -1696,91 +1737,27 @@ readchat()
 
         switch(msg[0])
         {
-            case "!endround": endRound(true); player iprintln("Ending current round"); break;
-            case "!killhorde": endRound(false); player iprintln("Killing current horde"); break;
-            case "!tpc": tpc_player(player, msg[1], msg[3], msg[2]); break;
-            case "!tp": tpl_player(player, msg[1]); break;
-            case "!sph": player.sph.alpha = !player.sph.alpha; break;
-            case "!power":
-				setDvar("power", !getDvarInt("power"));
-				if(getDvarInt("power"))
-					player iprintln("Power will be turned on at the start of the game");
-				else
-					player iprintln("Power will not be turned on at the start of the game");
-			break;
-            case "!boards":
-				setDvar("boards", !getDvarInt("boards"));
-				if(getDvarInt("boards"))
-					player iprintln("Boards will be removed at the start of the game");
-				else
-					player iprintln("Boards will not be removed at the start of the game");
-			break;
-            case "!doors":
-				setDvar("doors", !getDvarInt("doors"));
-				if(getDvarInt("doors"))
-					player iprintln("Doors will be opened at the start of the game");
-				else
-					player iprintln("Doors will not be opened at the start of the game");
-			break;
+            case "!a": strattesterprint(player.origin + "    " + player.angles); break;
+            case "!endround": endroundcase(); break;
+            case "!killhorde": killhordecase(); break;
+            case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
+            case "!tp": tpcase(player, msg[1]); break;
+            case "!sph": setDvar("sph", !getDvarInt("sph")); break;
+            case "!power": powercase(); break;
+            case "!boards": boardscase(); break;
+            case "!doors": doorscase(); break;
             case "!round": setDvar("round", msg[1]); break;
-            case "!depart": setDvar("depart", msg[1]); break;
             case "!delay": setDvar("delay", msg[1]); break;
-            case "!buried": setDvar("setupBuried", !getDvarInt("setupBuried")); break;
             case "!zone": setDvar("zone", !getDvarInt("zone")); break;
             case "!remaining": setDvar("remaining", !getDvarInt("remaining")); break;
-            case "!weapons":
-				setDvar("weapons", !getDvarInt("weapons"));
-				if(getDvarInt("weapons"))
-					player iprintln("You will spawn with weapons");
-				else
-					player iprintln("You will not spawn with weapons");
-			break;
-            case "!perks": setDvar("perks", !getDvarInt("perks")); break;
-            case "!traptimer": setDvar("traptimer", !getDvarInt("traptimer")); break;
-            case "!wm":
-				setDvar("wm", !getDvarInt("wm"));
-				if(getDvarInt("wm"))
-					player iprintln("You will spawn with war machine");
-				else
-					player iprintln("You will not spawn with war machine");
-			break;
+            case "!weapons": weaponscase(); break;
+            case "!perks": perkscase(); break;
             case "!healthbar": setDvar("healthbar", !getDvarInt("healthbar")); break;
             case "!timer": setDvar("timer", msg[1]); break;
-            case "!cherry":
-				setDvar("cherry", !getDvarInt("cherry"));
-				if(getDvarInt("cherry"))
-					player iprintln("You will spawn with electric cherry");
-				else
-					player iprintln("You will not spawn with electric cherry");
-			break;
-            case "!perkrng":
-				setDvar("perkrng", !getDvarInt("perkrng"));
-			break;
-            case "!lives": 
-				setDvar("lives", !getDvarInt("lives"));
-				if(getDvarInt("lives"))
-					player iprintln("Infinite lives deactivated");
-				else
-					player iprintln("Infinite lives activated");
-			break;
-            case "!drops":
-				setDvar("remove_drops", !getDvarInt("remove_drops"));
-				if(getDvarInt("remove_drops"))
-					player iprintln("Drops will no longer spawn");
-				else
-					player iprintln("Drops will spawn");
-				break;
-            case "!shield": 
-				setDvar("shield", !getDvarInt("shield"));
-				if(getDvarInt("shield"))
-					player iprintln("restart the match to spawn with shield");
-				else
-					player iprintln("restart the match to spawn without shield"); break;
-            case "!busloc": setDvar("busloc", !getDvarInt("busloc")); break;
-            case "!bustimer": setDvar("bustimer", !getDvarInt("bustimer")); break;
 			case "!nuke": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("nuke", player.origin + (0, 0, 40)); break;
 			case "!max": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("full_ammo", player.origin + (0, 0, 40)); break;
 			case "!boxmove": boxmove(msg[1]); break;
+			case "!fog": fogcase(); break;
         }
     }
 }
@@ -1864,18 +1841,155 @@ force_next_location()
             level.chest_index = i;
 }
 
-tpc_player(player, x, z, y)
+createDvar(dvar, set)
 {
+	if(getDvar(dvar) == "")
+		setDvar(dvar, set);
+}
 
+
+trap_timer()
+{
+	self endon( "disconnect" );
+
+	self.trap_timer = newclienthudelem( self );
+	self.trap_timer.alignx = "right";
+	self.trap_timer.aligny = "top";
+	self.trap_timer.horzalign = "user_right";
+	self.trap_timer.vertalign = "user_top";
+	self.trap_timer.x = -2;
+	self.trap_timer.y = 14;
+	self.trap_timer.fontscale = 1.4;
+	self.trap_timer.hidewheninmenu = 1;
+	self.trap_timer.hidden = 0;
+	self.trap_timer.label = &"";
+
+	while(true)
+	{
+		if(getDvarInt("traptimer"))
+		{
+			level waittill( "trap_activated" );
+			if( level.trap_activated )
+			{
+				wait 0.1;
+				self.trap_timer.color = ( 0, 1, 0 );
+				self.trap_timer.alpha = 1;
+				self.trap_timer settimer( 25 );
+				wait 25;
+				self.trap_timer settimer( 25 );
+				self.trap_timer.color = ( 1, 0, 0 );
+				wait 25;
+				self.trap_timer.alpha = 0;
+			}
+		}
+		wait 0.1;
+	}
+}
+
+endRound(round)
+{
+	if(round) level.zombie_total = 0;
+	
+	location = level.players[0].origin;
+	player_team = level.players[0].team;
+    zombies = getaiarray( level.zombie_team );
+    zombies = arraysort( zombies, location );
+    zombies_nuked = [];
+
+    foreach(zombie in zombies)
+    {
+        if ( isdefined( zombie.ignore_nuke ) && zombie.ignore_nuke )
+            continue;
+
+        if ( isdefined( zombie.marked_for_death ) && zombie.marked_for_death )
+            continue;
+
+        if ( isdefined( zombie.nuke_damage_func ) )
+        {
+            zombie thread [[ zombie.nuke_damage_func ]]();
+            continue;
+        }
+
+        if ( is_magic_bullet_shield_enabled( zombie ) )
+            continue;
+
+        zombie.marked_for_death = 1;
+        zombie.nuked = 1;
+        zombies_nuked[zombies_nuked.size] = zombie;
+    }
+
+    foreach (nuked_zombie in zombies_nuked)
+    {
+        if ( !isdefined( nuked_zombie ) )
+            continue;
+
+        if ( is_magic_bullet_shield_enabled( nuked_zombie ) )
+            continue;
+
+        nuked_zombie dodamage( nuked_zombie.health + 666, nuked_zombie.origin );
+    }
+}
+
+fast_chest_move()
+{
+    if ( isdefined( self.zbarrier ) )
+        self hide_chest( 1 );
+
+    level.verify_chest = 0;
+
+    if ( isdefined( level._zombiemode_custom_box_move_logic ) )
+        [[ level._zombiemode_custom_box_move_logic ]]();
+    else
+        default_box_move_logic();
+
+    if ( isdefined( level.chests[level.chest_index].box_hacks["summon_box"] ) )
+        level.chests[level.chest_index] [[ level.chests[level.chest_index].box_hacks["summon_box"] ]]( 0 );
+
+    playfx( level._effect["poltergeist"], level.chests[level.chest_index].zbarrier.origin );
+    level.chests[level.chest_index] show_chest();
+    flag_clear( "moving_chest_now" );
+    self.zbarrier.chest_moving = 0;
+}
+
+zombie_can_drop_powerups(zombie)
+{
+    if ( is_tactical_grenade( zombie.damageweapon ) || !flag( "zombie_drop_powerups" ) )
+        return false;
+
+    if ( isdefined( zombie.no_powerups ) && zombie.no_powerups )
+        return false;
+
+    return !getDvarInt("remove_drops");
+}
+
+strattesterprint(message)
+{
+	foreach(player in level.players)
+		player iprintln("^5[^6Strat Tester^5]^7 " + message);
+}
+
+endroundcase()
+{
+    endRound(true);
+    strattesterprint("Ending current round");
+}
+
+killhordecase()
+{
+    endRound(false);
+    strattesterprint("Killing current horde");
+}
+
+tpccase(player, x, z, y)
+{
     x = string_to_float(x);
     y = string_to_float(y);
     z = string_to_float(z);
-    player iprintln("Mooving " + player.name + " to " + x + " " + y + " " + z);
+    strattesterprint("Teleporting " + player.name + " to " + x + " " + y + " " + z);
     player setOrigin((string_to_float(x), string_to_float(y), string_to_float(z)));
-    return;
 }
 
-tpl_player(player, location)
+tpcase(player, location)
 {
 	if(istranzit())
 		switch(location)
@@ -1926,129 +2040,70 @@ tpl_player(player, location)
 			default: return;
 		}
 
-
-	player iprintln("Mooving " + player.name + " to " + location);
+	strattesterprint("Teleporting " + player.name + " to " + location);
     player setOrigin(pos);
     player setPlayerAngles(ang);
 }
 
-createDvar(dvar, set)
+powercase()
 {
-	if(getDvar(dvar) == "")
-		setDvar(dvar, set);
-}
-
-
-trap_timer()
-{
-	self endon( "disconnect" );
-
-	self.trap_timer = newclienthudelem( self );
-	self.trap_timer.alignx = "right";
-	self.trap_timer.aligny = "top";
-	self.trap_timer.horzalign = "user_right";
-	self.trap_timer.vertalign = "user_top";
-	self.trap_timer.x = -2;
-	self.trap_timer.y = 14;
-	self.trap_timer.fontscale = 1.4;
-	self.trap_timer.hidewheninmenu = 1;
-	self.trap_timer.hidden = 0;
-	self.trap_timer.label = &"";
-
-	while(true)
-	{
-		if(getDvarInt("traptimer"))
-		{
-			level waittill( "trap_activated" );
-			if( level.trap_activated )
-			{
-				wait 0.1;
-				self.trap_timer.color = ( 0, 1, 0 );
-				self.trap_timer.alpha = 1;
-				self.trap_timer settimer( 25 );
-				wait 25;
-				self.trap_timer settimer( 25 );
-				self.trap_timer.color = ( 1, 0, 0 );
-				wait 25;
-				self.trap_timer.alpha = 0;
-			}
-		}
-		wait 0.1;	
-	}
-}
-
-endRound(round)
-{
-	if(round) level.zombie_total = 0;
-	
-	location = level.players[0].origin;
-	player_team = level.players[0].team;
-    zombies = getaiarray( level.zombie_team );
-    zombies = arraysort( zombies, location );
-    zombies_nuked = [];
-
-    for ( i = 0; i < zombies.size; i++ )
-    {
-        if ( isdefined( zombies[i].ignore_nuke ) && zombies[i].ignore_nuke )
-            continue;
-
-        if ( isdefined( zombies[i].marked_for_death ) && zombies[i].marked_for_death )
-            continue;
-
-        if ( isdefined( zombies[i].nuke_damage_func ) )
-        {
-            zombies[i] thread [[ zombies[i].nuke_damage_func ]]();
-            continue;
-        }
-
-        if ( is_magic_bullet_shield_enabled( zombies[i] ) )
-            continue;
-
-        zombies[i].marked_for_death = 1;
-        zombies[i].nuked = 1;
-        zombies_nuked[zombies_nuked.size] = zombies[i];
-    }
-
-    for ( i = 0; i < zombies_nuked.size; i++ )
-    {
-        if ( !isdefined( zombies_nuked[i] ) )
-            continue;
-
-        if ( is_magic_bullet_shield_enabled( zombies_nuked[i] ) )
-            continue;
-
-        zombies_nuked[i] dodamage( zombies_nuked[i].health + 666, zombies_nuked[i].origin );
-    }
-}
-
-fast_chest_move()
-{
-    if ( isdefined( self.zbarrier ) )
-        self hide_chest( 1 );
-
-    level.verify_chest = 0;
-
-    if ( isdefined( level._zombiemode_custom_box_move_logic ) )
-        [[ level._zombiemode_custom_box_move_logic ]]();
+    setDvar("power", !getDvarInt("power"));
+    if(getDvarInt("power"))
+        strattesterprint("Power will be turned on at the start of the game");
     else
-        default_box_move_logic();
-
-    if ( isdefined( level.chests[level.chest_index].box_hacks["summon_box"] ) )
-        level.chests[level.chest_index] [[ level.chests[level.chest_index].box_hacks["summon_box"] ]]( 0 );
-
-    playfx( level._effect["poltergeist"], level.chests[level.chest_index].zbarrier.origin );
-    level.chests[level.chest_index] show_chest();
-    flag_clear( "moving_chest_now" );
-    self.zbarrier.chest_moving = 0;
+        strattesterprint("Power will not be turned on at the start of the game");
 }
 
-zombie_can_drop_powerups(zombie)
+boardscase()
 {
-    if ( is_tactical_grenade( zombie.damageweapon ) || !flag( "zombie_drop_powerups" ) )
-        return false;
+    setDvar("boards", !getDvarInt("boards"));
+    if(getDvarInt("boards"))
+        strattesterprint("Boards will be removed at the start of the game");
+    else
+        strattesterprint("Boards will not be removed at the start of the game");
+}
 
-    if ( isdefined( zombie.no_powerups ) && zombie.no_powerups )
-        return false;
+doorscase()
+{
+    setDvar("doors", !getDvarInt("doors"));
+    if(getDvarInt("doors"))
+        strattesterprint("Doors will be opened at the start of the game");
+    else
+        strattesterprint("Doors will not be opened at the start of the game");
+}
 
-    return !getDvarInt("remove_drops");
+weaponscase()
+{
+    setDvar("weapons", !getDvarInt("weapons"));
+    if(getDvarInt("weapons"))
+        strattesterprint("You will spawn with weapons");
+    else
+        strattesterprint("You will not spawn with weapons");
+}
+
+perkscase()
+{
+    if(getDvarInt("perks"))
+        strattesterprint("You will spawn with perks");
+    else
+        strattesterprint("You will spawn without perks");
+    setDvar("perks", !getDvarInt("perks")); 
+}
+
+dropscase()
+{
+    setDvar("remove_drops", !getDvarInt("remove_drops"));
+    if(getDvarInt("remove_drops"))
+        strattesterprint("Drops will no longer spawn");
+    else
+        strattesterprint("Drops will spawn");
+}
+
+fogcase()
+{
+	setDvar("r_fog", !getDvarInt("r_fog"));
+	if(!getDvarInt("r_fog"))
+		strattesterprint("Removing fog");
+	else
+		strattesterprint("Adding fog");
 }

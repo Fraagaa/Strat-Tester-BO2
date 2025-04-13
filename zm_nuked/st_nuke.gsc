@@ -27,6 +27,32 @@ init()
     level thread checkpaplocation();
     level thread boxhits();
 	level thread raygun_counter();
+    level thread readchat();
+}
+
+readchat() 
+{
+    self endon("end_game");
+    while (true) 
+    {
+        level waittill("say", message, player);
+        msg = strtok(tolower(message), " ");
+
+        if(msg[0][0] != "!")
+            continue;
+
+        switch(msg[0])
+        {
+            case "!endround": case "!killhorde": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
+            default: strattesterprint("Unknown command"); break;
+        }
+    }
+}
+
+strattesterprint(message)
+{
+	foreach(player in level.players)
+		player iprintln("^5[^6Strat Tester^5]^7 " + message);
 }
 
 bring_perks()

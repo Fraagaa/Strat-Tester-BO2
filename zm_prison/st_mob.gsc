@@ -26,10 +26,15 @@ init()
 	level thread spawn_buildable_trigger((3366, 9406, 1336), "alcatraz_shield_zm", "^3Press &&1 for ^5Shield"); // shield
 	level.players[0] thread speeddoor();
 	level.players[0] thread infinite_afterlifes();
+	level thread readchat();
 }
 
 speeddoor()
 {
+	if(!getDvarInt("doors"))
+		return;
+	if(!getDvarInt("power"))
+		return;
 	flag_wait( "afterlife_start_over" );
 	wait 1;
 	self takeWeapon("raygun_mark2_upgraded_zm");
@@ -54,11 +59,14 @@ speeddoor()
 	wait 0.5;
 	self setOrigin((-359, 9077, 1450));
 	self setPlayerAngles((0, -170, 0));
-	wait 2;
+	wait 0.5;
+	self setOrigin((800, 8403, 1544));
+	self setPlayerAngles((0, -90, 0));
+	wait 0.5;
 	self setOrigin((2050, 9566, 1336)); // cafe key
-	wait 2;
+	wait 1;
 	self setOrigin((-277, 9107, 1336));// office key
-	wait 2;
+	wait 1;
 	self setOrigin((1195, 10613, 1336));
 	self TakeWeapon("lightning_hands_zm");
 	self giveweapon("raygun_mark2_upgraded_zm");
@@ -108,4 +116,50 @@ infinite_afterlifes()
 		if(getDvarInt("lives"))
 			self.lives++;
 	}
+}
+
+readchat()
+{
+    self endon("end_game");
+    while (true) 
+    {
+        level waittill("say", message, player);
+        msg = strtok(tolower(message), " ");
+
+        if(msg[0][0] != "!")
+            continue;
+
+        switch(msg[0])
+        {
+            case "!shield": shieldcase(); break;
+            case "!lives": livescase(); break;
+            case "!traptimer": setDvar("traptimer", !getDvarInt("traptimer")); break;
+            case "!endround": case "!killhorde": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
+            default: strattesterprint("Unknown command"); break;
+        }
+    }
+}
+
+shieldcase()
+{
+    setDvar("shield", !getDvarInt("shield"));
+    if(getDvarInt("shield"))
+        strattesterprint("restart the match to spawn with shield");
+    else
+        strattesterprint("restart the match to spawn without shield");
+}
+
+livescase()
+{
+    setDvar("lives", !getDvarInt("lives"));
+    if(getDvarInt("lives"))
+        strattesterprint("Infinite lives deactivated");
+    else
+        strattesterprint("Infinite lives activated");
+}
+
+strattesterprint(message)
+{
+	foreach(player in level.players)
+		player iprintln("^5[^6Strat Tester^5]^7 " + message);
 }

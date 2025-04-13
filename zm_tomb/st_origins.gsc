@@ -528,7 +528,6 @@ stomptracker()
 	level.stomp_hud.hidden = 0;
 	level.stomp_hud.label = &"^3Stomp: ^5";
 	flag_wait("initial_blackscreen_passed");
-	level.stomp_hud.alpha = 1;
 	while(1)
 	{
 		level.stomp_hud setvalue(level.stompkills);
@@ -553,7 +552,6 @@ tanktracker()
 	level.tank_hud.hidden = 0;
 	level.tank_hud.label = &"^3Tank: ^5";
 	flag_wait("initial_blackscreen_passed");
-	level.tank_hud.alpha = 1;
 	while(1)
 	{
 		level.tank_hud setvalue(level.tankkills);
@@ -578,7 +576,6 @@ tumbletracker()
 	level.tumble_hud.hidden = 0;
 	level.tumble_hud.label = &"^3Tumble: ^5";
 	flag_wait("initial_blackscreen_passed");
-	level.tumble_hud.alpha = 1;
 	while(1)
 	{
 		level.tumble_hud setvalue(level.tumbles);
@@ -665,6 +662,54 @@ readchat()
             case "!stomp": level.stomp_hud.alpha = !level.stomp_hud.alpha; break;
             case "!tumble": level.tumble_hud.alpha = !level.tumble_hud.alpha; break;
             case "!tank": level.tank_hud.alpha = !level.tank_hud.alpha; break;
+            case "!cherry": cherrycase(); break;
+            case "!shield": shieldcase(); break;
+            case "!wm": wmcase(); break;
+            case "!staff": staffcase(); break;
+            case "!endround": case "!killhorde": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
+            default: strattesterprint("Unknown command"); break;
         }
     }
+}
+
+shieldcase()
+{
+    setDvar("shield", !getDvarInt("shield"));
+    if(getDvarInt("shield"))
+        strattesterprint("restart the match to spawn with shield");
+    else
+        strattesterprint("restart the match to spawn without shield");
+}
+
+cherrycase()
+{
+    setDvar("cherry", !getDvarInt("cherry"));
+    if(getDvarInt("cherry"))
+        strattesterprint("You will spawn with electric cherry");
+    else
+        strattesterprint("You will not spawn with electric cherry");
+}
+
+wmcase()
+{
+    setDvar("wm", !getDvarInt("wm"));
+    if(getDvarInt("wm"))
+        strattesterprint("You will spawn with war machine");
+    else
+        strattesterprint("You will not spawn with war machine");
+}
+
+strattesterprint(message)
+{
+	foreach(player in level.players)
+		player iprintln("^5[^6Strat Tester^5]^7 " + message);
+}
+
+staffcase()
+{
+	setDvar("staff", !getDvarInt("staff"));
+	if(getDvarInt("staff"))
+		strattesterprint("You will spawn with the ice staff");
+	else
+		strattesterprint("You can spawn with the ice staff or the wind staff");
 }

@@ -3,37 +3,54 @@
 ## [**Donwload**](https://github.com/Fraagaa/Strat-Tester-BO2/releases/latest/download/Strat.Tester.rar)
 
 ## Chat Commands
-- `!tpc` teleports player to desired coordinates
-- `!tp` teleports player to desired location
-- `!endround` ends current round
-- `!killhorde` kills current horde
-- `!sph` toggles sph meter
-- `!drops` enables drops
-- `!power` toggles between power and no power
-- `!boards` toggles opening window's boards
-- `!doors` toggles oppening all necesary doors
-- `!weapons` toggles spawning with weapons
-- `!perks` toggles spawning with perks / reviving with perks
-- `!round` changes initial round
-- `!depart` changes bus depart time on farm
-- `!busloc` displays the bus location
-- `!bustimer` displays a bus timer
-- `!delay` changes delat at the start of the round
-- `!buried` toggles buildable setup on buried
-- `!zone` toggles zone name
-- `!remaining` toggles zombie counter
-- `!traptimer` toggles traptimer on mob
-- `!wm` toggles getting war machine on origins
-- `!healthbar` toggles healthbar
-- `!timer` changes timer position or hides it
-- `!cherry` toggles getting cherry in origins
-- `!perkrng` toggles autorestart for pap on green house
-- `!lives` toggles infinite afterlives
-- `!tank` toggles tank kill counter on origins
-- `!tumble` toggles tumble counter on origins
-- `!stomp` toggles stomp counter on origins
-- `!templars` starts a templar round if more than 3 generator are on
-- `!shield` toggles starting with shield equipped and built
+
+# General
+- `!boards`        toggles opening window's boards  
+- `!delay`         changes delat at the start of the round
+- `!doors`         toggles oppening all necesary doors  
+- `!drops`         enables drops  
+- `!endround`      ends current round  
+- `!fog`           toggles fog  
+- `!healthbar`     toggles healthbar  
+- `!killhorde`     kills current horde  
+- `!perks`         toggles spawning with perks / reviving with perks  
+- `!power`         toggles between power and no power  
+- `!remaining`     toggles zombie counter  
+- `!round`         changes initial round  
+- `!sph`           toggles seconds per horde display  
+- `!timer`         changes timer position or hides it  
+- `!tp`            teleports player to desired location  
+- `!tpc`           teleports player to desired coordinates  
+- `!weapons`       toggles spawning with weapons  
+- `!zone`          toggles zone name  
+
+# Tranzit
+- `!denizen`     toggles denizens spawns
+- `!buson / !busoff` stops/starts the bus
+- `!perma`       awards perman perks to player
+- `!depart`      changes bus depart time on farm
+- `!busloc`      displays the bus location
+- `!bustimer`    displays a bus timer
+
+# Town
+- `!jug`         changes game set up in town
+
+# Mob
+- `!traptimer`   toggles traptimer on mob
+
+# Buried
+- `!buried`      toggles buildable setup on buried
+
+# Origins
+- `!cherry`      toggles getting cherry in origins  
+- `!lives`       toggles infinite afterlives  
+- `!shield`      toggles starting with shield equipped and built  
+- `!stomp`       toggles stomp counter on origins  
+- `!tank`        toggles tank kill counter on origins  
+- `!templars`    starts a templar round if more than 3 generator are on  
+- `!tumble`      toggles tumble counter on origins  
+- `!wm`          toggles getting war machine on origins  
+
 
 ## TP locations for !tp
 | **Map**     | **Tranzit**            | **Die Rise**   | **MOB**     | **Buried**   | **Origins**      |
@@ -80,6 +97,12 @@
 - Display at the top left of the screen indicating the ammount of time it takes for the bus to depart from farm.
 - Added a third timer for the bus (use !bustimer)
 - Added a display for the bus location (use !busloc)
+- Players will get a notification when a denizen spawns
+
+### Town
+- 2 game setups
+- Jug opened
+- Speed cola opened
 
 ### Nuketown
 - All perks fall from the sky at the start of the game
