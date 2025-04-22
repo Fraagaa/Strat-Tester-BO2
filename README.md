@@ -133,3 +133,10 @@
 - All portals are oppened
 - Trackers for zombies stopmpt and tumbled
 - Tracker for tank kills (does not count the flamethrower kills) (can be turned on with !tank)
+
+# TO DO
+- Make it so generators cant get locked
+- Add menus
+- Add !drops to commands
+- Display when zombies are killed by gondola
+- Give max ammo reward on origins
