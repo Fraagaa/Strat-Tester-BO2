@@ -1732,7 +1732,7 @@ readchat()
 
         switch(msg[0])
         {
-            case "!a": strattesterprint(player.origin + "    " + player.angles); break;
+             // case "!a": strattesterprint(player.origin + "    " + player.angles); break;
             case "!endround": endroundcase(); break;
             case "!killhorde": killhordecase(); break;
             case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
@@ -1754,6 +1754,7 @@ readchat()
 			case "!boxmove": boxmove(msg[1]); break;
 			case "!fog": fogcase(); break;
 			case "!notarget": notargetcase(player); break;
+			case "!drops": dropscase(player); break;
         }
     }
 }
