@@ -138,5 +138,4 @@
 - Make it so generators cant get locked
 - Add menus
 - Display when zombies are killed by gondola
-- Give max ammo reward on origins
 - Fix 3 guns on origins
