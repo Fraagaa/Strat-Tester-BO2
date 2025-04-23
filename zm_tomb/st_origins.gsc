@@ -662,3 +662,8 @@ staffcase()
 	else
 		strattesterprint("You can spawn with the ice staff or the wind staff");
 }
+
+pack_a_punch_think()
+{
+	pack_a_punch_enable();
+}
