@@ -76,12 +76,13 @@ connected_st()
 {
     self endon( "disconnect" );
 	self waittill("spawned_player");
+	stversion = 1.6;
 
     while(true)
     {
 		if(!isdefined(self.zone_hud))
 		{
-			self iprintln("^6Strat Tester");
+			self iprintln("^6Strat Tester" + stversion);
 			self iprintln("^5Made by BoneCrusher");
 			self thread scanweapons();
 			self thread health_bar_hud();
@@ -663,7 +664,7 @@ zombie_remaining_hud()
 
     while(true)
     {
-        self.zombie_counter_hud setValue( ( maps\mp\zombies\_zm_utility::get_round_enemy_array().size + level.zombie_total ) );
+        self.zombie_counter_hud setValue((maps\mp\zombies\_zm_utility::get_round_enemy_array().size + level.zombie_total));
         wait 0.05; 
     }
 }
