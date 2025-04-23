@@ -34,6 +34,7 @@ main()
 	replacefunc(maps\mp\zombies\_zm_weap_one_inch_punch::knockdown_zombie_animate_state, ::custom_knockdown_zombie_animate_state);
 	replacefunc(maps\mp\zm_tomb_tank::tank_drop_powerups, ::tank_drop_powerups);
 	replacefunc(maps\mp\zm_tomb_capture_zones::pack_a_punch_think, ::pack_a_punch_think);
+	replacefunc(maps\mp\zm_tomb_utility::watch_staff_usage, ::watch_staff_usage);
 }
 
 init()
@@ -666,4 +667,43 @@ staffcase()
 pack_a_punch_think()
 {
 	pack_a_punch_enable();
+}
+
+
+watch_staff_usage()
+{
+    self notify( "watch_staff_usage" );
+    self endon( "watch_staff_usage" );
+    self endon( "disconnect" );
+    self setclientfieldtoplayer( "player_staff_charge", 0 );
+
+    while ( true )
+    {
+        self waittill( "weapon_change", weapon );
+        has_upgraded_staff = 0;
+        has_revive_staff = 0;
+        weapon_is_upgraded_staff = is_weapon_upgraded_staff( weapon );
+        str_upgraded_staff_weapon = undefined;
+        a_str_weapons = self getweaponslist();
+
+        foreach ( str_weapon in a_str_weapons )
+        {
+            if ( is_weapon_upgraded_staff( str_weapon ) )
+            {
+                has_upgraded_staff = 1;
+                str_upgraded_staff_weapon = str_weapon;
+            }
+
+            if ( str_weapon == "staff_revive_zm" )
+                has_revive_staff = 1;
+        }
+
+        if ( !has_revive_staff || !weapon_is_upgraded_staff && "none" != weapon && "none" != weaponaltweaponname( weapon ) )
+            self setactionslot( 3, "altmode" );
+        else
+            self setactionslot( 3, "weapon", "staff_revive_zm" );
+
+        if ( weapon_is_upgraded_staff )
+            self thread staff_charge_watch_wrapper( weapon );
+    }
 }

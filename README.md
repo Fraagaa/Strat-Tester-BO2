@@ -139,5 +139,4 @@
 - Add menus
 - Display when zombies are killed by gondola
 - Fix 3 guns on origins
-- Turn on all generators except 4
 - Add tp to all generatios
