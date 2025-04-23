@@ -82,7 +82,7 @@ connected_st()
     {
 		if(!isdefined(self.zone_hud))
 		{
-			self iprintln("^6Strat Tester" + stversion);
+			self iprintln("^6Strat Tester " + stversion);
 			self iprintln("^5Made by BoneCrusher");
 			self thread scanweapons();
 			self thread health_bar_hud();
