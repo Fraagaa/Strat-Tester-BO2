@@ -33,25 +33,36 @@ main()
 	replacefunc(maps\mp\zm_tomb_tank::flamethrower_damage_zombies, ::custom_flamethrower_damage_zombies);
 	replacefunc(maps\mp\zombies\_zm_weap_one_inch_punch::knockdown_zombie_animate_state, ::custom_knockdown_zombie_animate_state);
 	replacefunc(maps\mp\zm_tomb_tank::tank_drop_powerups, ::tank_drop_powerups);
-	replacefunc(maps\mp\zombies\_zm_utility::get_player_weapon_limit, ::new_weapon_limit);
+	replacefunc(maps\mp\zm_tomb_capture_zones::pack_a_punch_think, ::pack_a_punch_think);
 }
 
 init()
 {
 	level thread enable_all_teleporters();
 	level thread takeAllParts();
-	level thread activateGenerators();
 	level thread call_tank();
 	level thread readChat();
     thread wait_for_players();
     
 	flag_wait("initial_blackscreen_passed");
 	if(getDvarInt("shield")) level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
-	
+
 	foreach(player in level.players)
 			for(i = 0; i < 6; i++)
 				player maps\mp\zombies\_zm_challenges::increment_stat( "zc_zone_captures" );
-				
+	
+	foreach (gen in getstructarray( "s_generator", "targetname" ))
+	{
+		if(gen.script_noteworthy == "generator_nml_right")
+			continue;
+		gen.n_current_progress = 100;
+		gen players_capture_zone();
+		level setclientfield( gen.script_noteworthy, gen.n_current_progress / 100 );
+    	level setclientfield( "state_" + gen.script_noteworthy, 2 );
+	}
+
+	pack_a_punch_enable();
+
 	takecraftableparts( "" );
     thread placeStaffsInChargers();
 }
@@ -211,11 +222,6 @@ enemies_ignore_equipments()
 		maps\mp\zombies\_zm_equipment::enemies_ignore_equipment(equipment);
 		equipment = getNextArrayKey(level.zombie_include_equipment, equipment);
 	}
-}
-
-new_weapon_limit()
-{
-	return 3;
 }
 
 tank_drop_powerups()
@@ -399,62 +405,6 @@ tomb_give_equipment()
 	n_player = self getentitynumber() + 1;
 	level setclientfield( "shovel_player" + n_player, 2 );
     level setclientfield( "helmet_player" + n_player, 1 );
-}
-
-activateGenerators() 
-{
-    a_s_generator = getstructarray("s_generator", "targetname");
-
-    for (i = 0; i < a_s_generator.size; i++) 
-	{
-		if(a_s_generator[i].script_noteworthy == "generator_start_bunker")
-			continue;
-		if(a_s_generator[i].script_noteworthy == "generator_church")
-			continue;
-		if(a_s_generator[i].script_noteworthy == "generator_tank_trench")
-			continue;
-        a_s_generator[i].n_current_progress = 100;
-        a_s_generator[i] handle_generator_capture();
-    }
-}
-
-handle_generator_capture()
-{
-    level setclientfield( "zc_change_progress_bar_color", 0 );
-    self show_zone_capture_objective( 0 );
-
-    if ( self.n_current_progress == 100 )
-    {
-        self players_capture_zone();
-        self kill_all_capture_zombies();
-    }
-    else if ( self.n_current_progress == 0 )
-    {
-        if ( self ent_flag( "player_controlled" ) )
-        {
-            self.sndent stoploopsound( 0.25 );
-            self thread generator_deactivated_vo();
-            self.is_playing_audio = 0;
-
-            foreach ( player in get_players() )
-            {
-                player maps\mp\zombies\_zm_stats::increment_client_stat( "tomb_generator_lost", 0 );
-                player maps\mp\zombies\_zm_stats::increment_player_stat( "tomb_generator_lost" );
-            }
-        }
-
-        self set_zombie_controlled_area();
-
-        if ( flag( "recapture_event_in_progress" ) && get_captured_zone_count() > 0 )
-        {
-
-        }
-        else
-            self kill_all_capture_zombies();
-    }
-
-    if ( get_contested_zone_count() == 0 )
-        flag_clear( "zone_capture_in_progress" );
 }
 
 placeStaffsInChargers() 
@@ -711,4 +661,9 @@ staffcase()
 		strattesterprint("You will spawn with the ice staff");
 	else
 		strattesterprint("You can spawn with the ice staff or the wind staff");
+}
+
+pack_a_punch_think()
+{
+	pack_a_punch_enable();
 }
