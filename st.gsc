@@ -1732,7 +1732,7 @@ readchat()
 
         switch(msg[0])
         {
-             // case "!a": strattesterprint(player.origin + "    " + player.angles); break;
+            case "!a": strattesterprint(player.origin + "    " + player.angles); break;
             case "!endround": endroundcase(); break;
             case "!killhorde": killhordecase(); break;
             case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
@@ -1754,7 +1754,6 @@ readchat()
 			case "!boxmove": boxmove(msg[1]); break;
 			case "!fog": fogcase(); break;
 			case "!notarget": notargetcase(player); break;
-			case "!drops": dropscase(player); break;
         }
     }
 }
@@ -2032,7 +2031,12 @@ tpcase(player, location)
 		{
 			case "church": pos = (1878, -1358, 150); ang = (0, 140, 0); break;
 			case "tcp": pos = (10335, -7902, -411); ang = (0, 140, 0); break;
+			case "gen1": pos = (2340, 4978, -303); ang = (0, -132, 0); break;
 			case "gen2": pos = (469, 4788, -285); ang = (0, -134, 0); break;
+			case "gen3": pos = (740, 2123, -125); ang = (0, 135, 0); break;
+			case "gen4": pos = (2337, -170, 140); ang = (0, 90, 0); break;
+			case "gen5": pos = (-2830, -21, 238); ang = (0, 40, 0); break;
+			case "gen6": pos = (732, -3923, 300); ang = (0, 50, 0); break;
 			case "tank": pos = level.vh_tank.origin + (0, 0, 50); ang = level.vh_tank.angles; break;
 			default: return;
 		}
