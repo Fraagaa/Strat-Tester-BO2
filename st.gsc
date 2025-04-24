@@ -368,6 +368,7 @@ give_weapons_on_spawn()
 	if(isorigins())
 	{
 		self takeweapon("c96_zm");
+		wait 1;
 		self giveweapon_nzv( "sticky_grenade_zm" );
 		self giveweapon_nzv( "cymbal_monkey_zm" );
 		if(getDvarInt("shield"))
@@ -1719,18 +1720,48 @@ updateSPH() {
     }
 }
 
-
+addCommand(command)
+{
+	level.StratTesterCommands[level.StratTesterCommands.size] =  "!" + command;
+}
 readchat() 
 {
     self endon("end_game");
+	level.StratTesterCommands = [];
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!a";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!endround";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!killhorde";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!tpc";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!tp";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!sph";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!power";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!boards";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!doors";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!round";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!delay";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!zone";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!remaining";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!weapons";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!perks";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!healthbar";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!timer";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!nuke";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!max";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!boxmove";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!fog";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!notarget";
     while (true) 
     {
         level waittill("say", message, player);
         msg = strtok(tolower(message), " ");
-
+		println("	" + msg[0]);
         if(msg[0][0] != "!")
             continue;
-
+		if(!in_array(msg[0], level.StratTesterCommands))
+		{
+			strattesterprint("Unknown command ^1" + message);
+			continue;
+		}
         switch(msg[0])
         {
             case "!a": strattesterprint(player.origin + "    " + player.angles); break;
@@ -2247,4 +2278,12 @@ find_flesh()
         debug_print( "Zombie is re-acquiring enemy, ending breadcrumb search" );
         self notify( "zombie_acquire_enemy" );
     }
+}
+
+in_array(data, array)
+{
+	foreach(element in array)
+		if(element == data)
+			return true;
+	return false;
 }

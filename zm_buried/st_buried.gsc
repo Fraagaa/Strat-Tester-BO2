@@ -74,6 +74,8 @@ spawn_buildable_trigger(origin, build, string, limit)
 readchat()
 {
     self endon("end_game");
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!buried";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!perma";
     while (true) 
     {
         level waittill("say", message, player);
@@ -81,13 +83,13 @@ readchat()
 
         if(msg[0][0] != "!")
             continue;
+		if(!in_array(msg[0], level.StratTesterCommands))
+			continue;
 
         switch(msg[0])
         {
             case "!buried": buriedcase(); break;
             case "!perma": permacase(player); break;
-            case "!drops": case "!endround": case "!killhorde": case "!notarget": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
-            default: strattesterprint("Unknown command ^1" + message); break;
         }
     }
 }
@@ -201,4 +203,12 @@ remove_permaperk(perk_code)
 {
 	self.pers_upgrades_awarded[perk_code] = 0;
 	self playsoundtoplayer("evt_player_downgrade", self);
+}
+
+in_array(data, array)
+{
+	foreach(element in array)
+		if(element == data)
+			return true;
+	return false;
 }

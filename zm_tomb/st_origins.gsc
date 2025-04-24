@@ -598,6 +598,14 @@ custom_knockdown_zombie_animate_state()
 readchat() 
 {
     self endon("end_game");
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!templars";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!stomp";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!tumble";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!tank";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!cherry";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!shield";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!wm";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!staff";
     while (true) 
     {
         level waittill("say", message, player);
@@ -605,6 +613,8 @@ readchat()
 
         if(msg[0][0] != "!")
             continue;
+		if(!in_array(msg[0], level.StratTesterCommands))
+			continue;
 
         switch(msg[0])
         {
@@ -616,8 +626,6 @@ readchat()
             case "!shield": shieldcase(); break;
             case "!wm": wmcase(); break;
             case "!staff": staffcase(); break;
-            case "!drops": case "!endround": case "!killhorde": case "!notarget": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
-            default: strattesterprint("Unknown command ^1" + message); break;
         }
     }
 }
@@ -706,4 +714,12 @@ watch_staff_usage()
         if ( weapon_is_upgraded_staff )
             self thread staff_charge_watch_wrapper( weapon );
     }
+}
+
+in_array(data, array)
+{
+	foreach(element in array)
+		if(element == data)
+			return true;
+	return false;
 }

@@ -121,6 +121,9 @@ infinite_afterlifes()
 readchat()
 {
     self endon("end_game");
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!shield";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!lives";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!traptimer";
     while (true) 
     {
         level waittill("say", message, player);
@@ -128,14 +131,14 @@ readchat()
 
         if(msg[0][0] != "!")
             continue;
+		if(!in_array(msg[0], level.StratTesterCommands))
+			continue;
 
         switch(msg[0])
         {
             case "!shield": shieldcase(); break;
             case "!lives": livescase(); break;
             case "!traptimer": setDvar("traptimer", !getDvarInt("traptimer")); break;
-            case "!drops": case "!endround": case "!killhorde": case "!notarget": case "!tpc": case "!tp": case "!sph":case "!power": case "!boards": case "!doors": case "!round": case "!delay": case "!zone": case "!remaining": case "!weapons": case "!perks": case "!healthbar": case "!timer": case "!perkrng": case "!nuke":case "!max": case "!boxmove": case "!fog": break;
-            default: strattesterprint("Unknown command ^1" + message); break;
         }
     }
 }
@@ -162,4 +165,13 @@ strattesterprint(message)
 {
 	foreach(player in level.players)
 		player iprintln("^5[^6Strat Tester^5]^7 " + message);
+}
+
+
+in_array(data, array)
+{
+	foreach(element in array)
+		if(element == data)
+			return true;
+	return false;
 }
