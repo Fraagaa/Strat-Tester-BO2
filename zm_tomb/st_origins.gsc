@@ -54,6 +54,8 @@ init()
 	
 	foreach (gen in getstructarray( "s_generator", "targetname" ))
 	{
+		println(gen.script_noteworthy);
+		println(gen.origin);
 		if(gen.script_noteworthy == "generator_nml_right")
 			continue;
 		gen.n_current_progress = 100;
@@ -606,6 +608,7 @@ readchat()
 	level.StratTesterCommands[level.StratTesterCommands.size] = "!shield";
 	level.StratTesterCommands[level.StratTesterCommands.size] = "!wm";
 	level.StratTesterCommands[level.StratTesterCommands.size] = "!staff";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!gen";
     while (true) 
     {
         level waittill("say", message, player);
@@ -626,6 +629,7 @@ readchat()
             case "!shield": shieldcase(); break;
             case "!wm": wmcase(); break;
             case "!staff": staffcase(); break;
+			case "!gen": changeGenStatus(msg[1]); break;
         }
     }
 }
@@ -722,4 +726,38 @@ in_array(data, array)
 		if(element == data)
 			return true;
 	return false;
+}
+
+changeGenStatus(generator)
+{
+	generator = string_to_float(generator);
+	switch(generator)
+	{
+		case 1: name = "generator_start_bunker"; break;
+		case 2: name = "generator_tank_trench"; break;
+		case 3: name = "generator_mid_trench"; break;
+		case 4: name = "generator_nml_right"; break;
+		case 5: name = "generator_nml_left"; break;
+		case 6: name = "generator_church"; break;
+	}
+	foreach (gen in getstructarray( "s_generator", "targetname" ))
+	{
+		if(gen.script_noteworthy == name)
+		{
+			if(gen.n_current_progress == 100)
+			{
+				gen.n_current_progress = 0;
+				gen set_zombie_controlled_area();
+				level setclientfield( gen.script_noteworthy, gen.n_current_progress / 100 );
+				level setclientfield( "state_" + gen.script_noteworthy, 0 );
+			}
+			else
+			{
+				gen.n_current_progress = 100;
+				gen players_capture_zone();
+				level setclientfield( gen.script_noteworthy, gen.n_current_progress / 100 );
+				level setclientfield( "state_" + gen.script_noteworthy, 2 );
+			}
+		}
+	}
 }
