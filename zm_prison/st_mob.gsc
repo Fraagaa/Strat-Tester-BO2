@@ -64,9 +64,9 @@ speeddoor()
 	self setPlayerAngles((0, -90, 0));
 	wait 0.5;
 	self setOrigin((2050, 9566, 1336)); // cafe key
-	wait 1;
+	wait 1.5;
 	self setOrigin((-277, 9107, 1336));// office key
-	wait 1;
+	wait 1.5;
 	self setOrigin((1195, 10613, 1336));
 	self TakeWeapon("lightning_hands_zm");
 	self giveweapon("raygun_mark2_upgraded_zm");
