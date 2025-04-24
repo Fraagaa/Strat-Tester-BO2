@@ -1754,7 +1754,6 @@ readchat()
     {
         level waittill("say", message, player);
         msg = strtok(tolower(message), " ");
-		println("	" + msg[0]);
         if(msg[0][0] != "!")
             continue;
 		if(!in_array(msg[0], level.StratTesterCommands))
