@@ -1,28 +1,12 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
-#include maps\mp\zm_transit_bus;
-#include maps\mp\gametypes_zm\_globallogic;
-#include maps\mp\gametypes_zm\_hud;
-#include maps\mp\gametypes_zm\_hud_message;
-#include maps\mp\gametypes_zm\_hud_util;
-#include maps\mp\gametypes_zm\_zm_gametype;
 #include maps\mp\zombies\_zm;
-#include maps\mp\zombies\_zm_audio;
-#include maps\mp\zombies\_zm_audio_announcer;
-#include maps\mp\zombies\_zm_blockers;
-#include maps\mp\zombies\_zm_buildables;
-#include maps\mp\zombies\_zm_craftables;
 #include maps\mp\zombies\_zm_equipment;
 #include maps\mp\zombies\_zm_magicbox;
 #include maps\mp\zombies\_zm_melee_weapon;
-#include maps\mp\zombies\_zm_perks;
-#include maps\mp\zombies\_zm_powerups;
-#include maps\mp\zombies\_zm_score;
-#include maps\mp\zombies\_zm_stats;
-#include maps\mp\zombies\_zm_unitrigger;
 #include maps\mp\zombies\_zm_utility;
-#include maps\mp\zombies\_zm_weap_claymore;
-#include maps\mp\zombies\_zm_weapons;
+
+#include scripts\zm\strattester\fixes;
 
 main()
 {
@@ -34,6 +18,7 @@ main()
 
 init()
 {
+	level.strat_tester = true;
     if(!isDefined(level.total_chest_accessed))
         level.total_chest_accessed = 0;
 	level thread setdvars();
@@ -80,7 +65,7 @@ connected_st()
 
     while(true)
     {
-		if(!isdefined(self.zone_hud))
+		if(!isdefined(self.has_hud))
 		{
 			self iprintln("^6Strat Tester " + stversion);
 			self iprintln("^5Made by BoneCrusher");
@@ -89,8 +74,8 @@ connected_st()
 			self thread zone_hud();
 			self thread zombie_remaining_hud();
 			self thread st_sph();
-			if(!isdefined(self.zone_hud))
-				self.zone_hud = true;
+			if(!isdefined(self.has_hud))
+				self.has_hud = true;
 		}
 		self.score = 1000000;
 		self thread give_weapons_on_spawn();
@@ -1756,7 +1741,7 @@ readchat()
         msg = strtok(tolower(message), " ");
         if(msg[0][0] != "!")
             continue;
-		if(!in_array(msg[0], level.StratTesterCommands))
+		if(!in_array(msg[0], level.StratTesterCommands) && (!in_array(msg[0], level.FragaCommands)))
 		{
 			strattesterprint("Unknown command ^1" + message);
 			continue;
