@@ -1,3 +1,5 @@
+#include common_scripts\utility;
+#include maps\mp\_utility;
 
 readchat() 
 {
@@ -579,12 +581,6 @@ in_array(data, array)
 			return true;
 	return false;
 }
-
-addCommand(command)
-{
-	level.StratTesterCommands[level.StratTesterCommands.size] =  "!" + command;
-}
-
 
 departcase(time)
 {
