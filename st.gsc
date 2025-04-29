@@ -76,7 +76,7 @@ connected_st()
 {
     self endon( "disconnect" );
 	self waittill("spawned_player");
-	stversion = 1.6;
+	stversion = 1.7;
 
     while(true)
     {
