@@ -4,6 +4,7 @@
 #include maps\mp\gametypes_zm\_hud_util;
 #include maps\mp\gametypes_zm\_hud_message;
 #include maps\mp\gametypes_zm\_globallogic;
+#include maps\mp\zombies\_zm_laststand;
 #include maps\mp\gametypes_zm\_weapons;
 #include maps\mp\zombies\_zm_buildables;
 #include maps\mp\zombies\_zm_equipment;
@@ -46,7 +47,11 @@ init()
     thread wait_for_players();
     
 	flag_wait("initial_blackscreen_passed");
-	if(getDvarInt("shield")) level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
+	if(getDvarInt("shield"))
+	{
+		level thread spawn_buildable_trigger((110, -3000, 60), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
+		level thread spawn_buildable_trigger((2308, 689, -23), "tomb_shield_zm", "^3Press &&1 for ^5Shield");
+	}
 
 	foreach(player in level.players)
 			for(i = 0; i < 6; i++)
@@ -54,8 +59,6 @@ init()
 	
 	foreach (gen in getstructarray( "s_generator", "targetname" ))
 	{
-		println(gen.script_noteworthy);
-		println(gen.origin);
 		if(gen.script_noteworthy == "generator_nml_right")
 			continue;
 		gen.n_current_progress = 100;
@@ -609,6 +612,7 @@ readchat()
 	level.StratTesterCommands[level.StratTesterCommands.size] = "!wm";
 	level.StratTesterCommands[level.StratTesterCommands.size] = "!staff";
 	level.StratTesterCommands[level.StratTesterCommands.size] = "!gen";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!unlockgens";
     while (true) 
     {
         level waittill("say", message, player);
@@ -630,6 +634,7 @@ readchat()
             case "!wm": wmcase(); break;
             case "!staff": staffcase(); break;
 			case "!gen": changeGenStatus(msg[1]); break;
+			case "!unlockgens": unlockgenscase(); break;
         }
     }
 }
@@ -760,4 +765,11 @@ changeGenStatus(generator)
 			}
 		}
 	}
+}
+
+unlockgenscase()
+{
+	foreach (gen in getstructarray( "s_generator", "targetname" ))
+		gen thread init_capture_zone();
+	strattesterprint("All generators have been unlocked");
 }

@@ -53,6 +53,7 @@
 - `!templars`    starts a templar round if more than 3 generator are on
 - `!tumble`      toggles tumble counter on origins
 - `!wm`          toggles getting war machine on origins
+- `!unlockgens`  unlocks all generators
 
 
 ## TP locations for !tp

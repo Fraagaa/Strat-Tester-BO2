@@ -1489,7 +1489,7 @@ setDvars()
 	if(isorigins())
 	{
 		createDvar("staff", 1); 
-		createDvar("cherry", 1);
+		createDvar("cherry", 0);
 		createDvar("wm", 0);
 	}
 	if(istown())
