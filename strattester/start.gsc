@@ -542,9 +542,6 @@ set_starting_round()
 
 zombie_spawn_wait()
 {
-	level endon("end_game");
-	level endon( "reround" );
-
 	setDvar("ai_disableSpawn", 1);
 
 	wait getDvarInt("delay");
@@ -552,22 +549,22 @@ zombie_spawn_wait()
 	setDvar("ai_disableSpawn", 0);
 }
 
-round_pause()
+round_pause_st()
 {   
 	if(ismob())
 	flag_wait( "afterlife_start_over" );
 
-
 	level.countdown_hud = create_simple_hud();
+	level.countdown_hud.fontscale = 24;
+	level.countdown_hud setshader( "hud_chalk_1", 64, 64 );
+	level.countdown_hud FadeOverTime( 2.0 );
+	level.countdown_hud SetValue(getDvarInt("delay"));
+	level.countdown_hud.color = ( 0.21, 0, 0 );
+	level.countdown_hud.alpha = 1;
 	level.countdown_hud.alignx = "center";
 	level.countdown_hud.aligny = "center";
 	level.countdown_hud.horzalign = "user_center";
 	level.countdown_hud.vertalign = "user_center";
-	level.countdown_hud.fontscale = 24;
-	level.countdown_hud setshader( "hud_chalk_1", 64, 64 );
-	level.countdown_hud FadeOverTime( 2.0 );
-	level.countdown_hud.color = ( 0.21, 0, 0 );
-	level.countdown_hud.alpha = 1;
 	wait 2;
 	level thread zombie_spawn_wait();
 

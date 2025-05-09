@@ -7,6 +7,7 @@
 
 displayBoxHits()
 {
+    level thread displayWatcher();
 	level.boxhitsst.hidewheninmenu = true;
     level.boxhitsst = createserverfontstring( "objective", 1.3 );
     level.boxhitsst.y = 0;
@@ -16,15 +17,14 @@ displayBoxHits()
     level.boxhitsst.horzalign = "user_center";
     level.boxhitsst.vertalign = "user_top";
     level.boxhitsst.aligny = "top";
-    level.boxhitsst.alpha = 0;
     level.boxhitsst.label = &"^3Box Hits: ^5";
-    level.boxhitsst setvalue(99);
     level.total_chest_accessed_mk2 = 0;
     level.total_chest_accessed_ray = 0;
     level.boxhitsst.alignx = "left";
     level.boxhitsst.horzalign = "user_left";
     level.boxhitsst.x = 2;
     level.boxhitsst.alpha = 1;
+    level.boxhitsst setvalue(0);
 
     while(!isdefined(level.total_chest_accessed) || !isdefined(level.chest_accessed))
         wait 0.1;
@@ -140,5 +140,16 @@ boxhits()
     {
         level waittill("connecting", player);
         player thread track_rays();
+    }
+}
+
+displayWatcher()
+{
+    while(true)
+    {
+        wait 0.1;
+        level.total_mk2_display.alpha = getDvarInt("boxhits");
+        level.total_ray_display.alpha = getDvarInt("boxhits");
+        level.boxhitsst.alpha = getDvarInt("boxhits");
     }
 }

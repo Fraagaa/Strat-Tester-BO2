@@ -39,7 +39,7 @@ init()
     
 	flag_wait("initial_blackscreen_passed");
 	level thread openAllDoors();
-    level thread round_pause();
+    level thread round_pause_st();
 	setdvar("cg_ufo_scaler", 6);
 }
 
@@ -123,7 +123,9 @@ setDvars()
 	createDvar("delay", 60);
 	createDvar("round", 100);
 	createDvar("sph", 1);
-	createDvar("remove_drops", 0); 
+	createDvar("remove_drops", 0);
+	createDvar("boxhits", 1);
+	createDvar("chat", "xxxxxxxxxxxx");
 
 	if(isorigins() || ismob())
 		createDvar("shield", 0); 
@@ -221,7 +223,6 @@ readchat()
 
 checkConsole()
 {
-	createDvar("chat", "xxxxxxxxxxxx");
 	while(true)
 	{
 		if(getDvar("chat") != "xxxxxxxxxxxx")
@@ -238,9 +239,10 @@ readconsole()
     self endon("end_game");
     while (true) 
     {
-        level waittill("sayConsole", message);
-		level.players[0] iprintln(message);
-		level.players[0] iprintln("a");
+		wait 0.1;
+		message = getDvar("chat");
+		if(message == "xxxxxxxxxxxx")
+			continue;
         msg = strtok(tolower(message), " ");
 		if(!in_array(msg[0], level.StratTesterCommands) && (!in_array(msg[0], level.FragaCommands)))
 		{
@@ -274,6 +276,7 @@ readconsole()
 			case "!fog": fogcase(); break;
 			case "!notarget": notargetcase(player); break;
         }
+		setDvar("chat", "xxxxxxxxxxxx");
     }
 }
 
