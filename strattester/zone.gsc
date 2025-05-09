@@ -1,5 +1,9 @@
 #include common_scripts\utility;
+#include maps\mp\zombies\_zm;
+#include maps\mp\zombies\_zm_utility;
 #include maps\mp\_utility;
+
+#include scripts\zm\strattester\ismap;
 
 zone_hud()
 {

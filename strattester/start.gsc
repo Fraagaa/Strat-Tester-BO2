@@ -1,6 +1,20 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
+#include maps\mp\gametypes_zm\_globallogic;
+#include maps\mp\zombies\_zm;
+#include maps\mp\zombies\_zm_blockers;
+#include maps\mp\zombies\_zm_buildables;
+#include maps\mp\zombies\_zm_craftables;
+#include maps\mp\zombies\_zm_equipment;
+#include maps\mp\zombies\_zm_magicbox;
+#include maps\mp\zombies\_zm_melee_weapon;
+#include maps\mp\zombies\_zm_perks;
+#include maps\mp\zombies\_zm_powerups;
+#include maps\mp\zombies\_zm_score;
+#include maps\mp\zombies\_zm_utility;
+#include maps\mp\zombies\_zm_weapons;
 
+#include scripts\zm\strattester\ismap;
 
 openAllDoors()
 {
@@ -602,4 +616,38 @@ turn_on_power()
 	powerSwitch waittill( "rotatedone" );
 	flag_set( "power_on" );
 	level setClientField( "zombie_power_on", 1 ); 
+}
+
+scanweapons()
+{
+	while(true)
+	{
+		wait 5;
+		while(true)
+		{
+			wait 0.1;
+			if(isdefined(self.revivetrigger))
+			{
+				while(isdefined(self.revivetrigger))
+					wait 0.1;
+				break;
+			}
+			if(self.origin[2] < 0 && isdierise())	//die rise
+			{
+				while(self.origin[2] < 0)
+					wait 0.1;
+				break;
+			}
+			self.a_saved_primaries = self getweaponslistprimaries();
+			self.a_saved_primaries_weapons = [];
+			index = 0;
+
+			foreach ( weapon in self.a_saved_primaries )
+			{
+				self.a_saved_primaries_weapons[index] = maps\mp\zombies\_zm_weapons::get_player_weapondata( self, weapon );
+				index++;
+			}
+			wait 0.1;
+		}
+	}
 }

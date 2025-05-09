@@ -132,6 +132,9 @@ track_rays()
 
 boxhits()
 {
+    wait 1;
+    if(isdefined(level.total_mk2_display))
+        return;
     level thread displayBoxHits();
     while(true)
     {

@@ -1,3 +1,9 @@
+#include maps\mp\gametypes_zm\_hud_util;
+#include maps\mp\zombies\_zm_utility;
+#include common_scripts\utility;
+#include maps\mp\_utility;
+
+#include scripts\zm\strattester\ismap;
 
 timer()
 {
@@ -203,46 +209,6 @@ timerlocation()
 		}
 	}
 }
-
-
-trap_timer()
-{
-	self endon( "disconnect" );
-
-	self.trap_timer = newclienthudelem( self );
-	self.trap_timer.alignx = "right";
-	self.trap_timer.aligny = "top";
-	self.trap_timer.horzalign = "user_right";
-	self.trap_timer.vertalign = "user_top";
-	self.trap_timer.x = -2;
-	self.trap_timer.y = 14;
-	self.trap_timer.fontscale = 1.4;
-	self.trap_timer.hidewheninmenu = 1;
-	self.trap_timer.hidden = 0;
-	self.trap_timer.label = &"";
-
-	while(true)
-	{
-		if(getDvarInt("traptimer"))
-		{
-			level waittill( "trap_activated" );
-			if( level.trap_activated )
-			{
-				wait 0.1;
-				self.trap_timer.color = ( 0, 1, 0 );
-				self.trap_timer.alpha = 1;
-				self.trap_timer settimer( 25 );
-				wait 25;
-				self.trap_timer settimer( 25 );
-				self.trap_timer.color = ( 1, 0, 0 );
-				wait 25;
-				self.trap_timer.alpha = 0;
-			}
-		}
-		wait 0.1;
-	}
-}
-
 
 
 trap_timer()

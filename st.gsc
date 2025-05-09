@@ -3,11 +3,15 @@
 #include maps\mp\zombies\_zm;
 #include maps\mp\zombies\_zm_equipment;
 #include maps\mp\zombies\_zm_magicbox;
-#include maps\mp\zombies\_zm_melee_weapon;
 #include maps\mp\zombies\_zm_utility;
 
 #include scripts\zm\strattester\fixes;
 #include scripts\zm\strattester\commands;
+#include scripts\zm\strattester\start;
+#include scripts\zm\strattester\zone;
+#include scripts\zm\strattester\timers;
+#include scripts\zm\strattester\ismap;
+#include scripts\zm\strattester\sph;
 
 main()
 {
@@ -29,6 +33,8 @@ init()
     level thread remove_boards_from_windows();
 	thread enable_cheats();
 	level thread readChat();
+	level thread readconsole();
+	level thread checkConsole();
     thread wait_for_players();
     
 	flag_wait("initial_blackscreen_passed");
@@ -185,6 +191,64 @@ readchat()
 			strattesterprint("Unknown command ^1" + message);
 			continue;
 		}
+        switch(msg[0])
+        {
+            case "!a": strattesterprint(player.origin + "    " + player.angles); break;
+            case "!endround": endroundcase(); break;
+            case "!killhorde": killhordecase(); break;
+            case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
+            case "!tp": tpcase(player, msg[1]); break;
+            case "!sph": setDvar("sph", !getDvarInt("sph")); break;
+            case "!power": powercase(); break;
+            case "!boards": boardscase(); break;
+            case "!doors": doorscase(); break;
+            case "!round": setDvar("round", msg[1]); break;
+            case "!delay": setDvar("delay", msg[1]); break;
+            case "!zone": setDvar("zone", !getDvarInt("zone")); break;
+            case "!remaining": setDvar("remaining", !getDvarInt("remaining")); break;
+            case "!weapons": weaponscase(); break;
+            case "!perks": perkscase(); break;
+            case "!healthbar": setDvar("healthbar", !getDvarInt("healthbar")); break;
+            case "!timer": setDvar("timer", msg[1]); break;
+			case "!nuke": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("nuke", player.origin + (0, 0, 40)); break;
+			case "!max": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("full_ammo", player.origin + (0, 0, 40)); break;
+			case "!boxmove": boxmove(msg[1]); break;
+			case "!fog": fogcase(); break;
+			case "!notarget": notargetcase(player); break;
+        }
+    }
+}
+
+checkConsole()
+{
+	createDvar("chat", "xxxxxxxxxxxx");
+	while(true)
+	{
+		if(getDvar("chat") != "xxxxxxxxxxxx")
+		{
+			level notify("sayConsole", getDvar("chat"));
+			setDvar("chat", "xxxxxxxxxxxx");
+		}
+		wait 0.1;
+	}
+}
+
+readconsole()
+{
+    self endon("end_game");
+    while (true) 
+    {
+        level waittill("sayConsole", message);
+		level.players[0] iprintln(message);
+		level.players[0] iprintln("a");
+        msg = strtok(tolower(message), " ");
+		if(!in_array(msg[0], level.StratTesterCommands) && (!in_array(msg[0], level.FragaCommands)))
+		{
+			strattesterprint("Unknown command ^1" + message);
+			continue;
+		}
+		if(!isdefined(player))
+			player = level.players[0];
         switch(msg[0])
         {
             case "!a": strattesterprint(player.origin + "    " + player.angles); break;
@@ -414,4 +478,10 @@ in_array(data, array)
 		if(element == data)
 			return true;
 	return false;
+}
+
+strattesterprint(message)
+{
+	foreach(player in level.players)
+		player iprintln("^5[^6Strat Tester^5]^7 " + message);
 }
