@@ -34,7 +34,7 @@ init()
 	thread enable_cheats();
 	level thread readChat();
 	level thread readconsole();
-	level thread checkConsole();
+	level thread removeUselessHUD();
     thread wait_for_players();
     
 	flag_wait("initial_blackscreen_passed");
@@ -68,7 +68,7 @@ connected_st()
 {
     self endon( "disconnect" );
 	self waittill("spawned_player");
-	stversion = 1.7;
+	stversion = 1.8;
 
     while(true)
     {
@@ -154,130 +154,6 @@ setDvars()
 	}
 	flag_wait("initial_blackscreen_passed");
     level.start_time = int(gettime() / 1000);
-}
-
-readchat() 
-{
-    self endon("end_game");
-	level.StratTesterCommands = [];
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!a";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!endround";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!killhorde";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!tpc";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!tp";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!sph";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!power";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!boards";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!doors";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!round";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!delay";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!zone";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!remaining";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!weapons";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!perks";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!healthbar";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!timer";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!nuke";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!max";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!boxmove";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!fog";
-	level.StratTesterCommands[level.StratTesterCommands.size] = "!notarget";
-    while (true) 
-    {
-        level waittill("say", message, player);
-        msg = strtok(tolower(message), " ");
-        if(msg[0][0] != "!")
-            continue;
-		if(!in_array(msg[0], level.StratTesterCommands) && (!in_array(msg[0], level.FragaCommands)))
-		{
-			strattesterprint("Unknown command ^1" + message);
-			continue;
-		}
-        switch(msg[0])
-        {
-            case "!a": strattesterprint(player.origin + "    " + player.angles); break;
-            case "!endround": endroundcase(); break;
-            case "!killhorde": killhordecase(); break;
-            case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
-            case "!tp": tpcase(player, msg[1]); break;
-            case "!sph": setDvar("sph", !getDvarInt("sph")); break;
-            case "!power": powercase(); break;
-            case "!boards": boardscase(); break;
-            case "!doors": doorscase(); break;
-            case "!round": setDvar("round", msg[1]); break;
-            case "!delay": setDvar("delay", msg[1]); break;
-            case "!zone": setDvar("zone", !getDvarInt("zone")); break;
-            case "!remaining": setDvar("remaining", !getDvarInt("remaining")); break;
-            case "!weapons": weaponscase(); break;
-            case "!perks": perkscase(); break;
-            case "!healthbar": setDvar("healthbar", !getDvarInt("healthbar")); break;
-            case "!timer": setDvar("timer", msg[1]); break;
-			case "!nuke": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("nuke", player.origin + (0, 0, 40)); break;
-			case "!max": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("full_ammo", player.origin + (0, 0, 40)); break;
-			case "!boxmove": boxmove(msg[1]); break;
-			case "!fog": fogcase(); break;
-			case "!notarget": notargetcase(player); break;
-        }
-    }
-}
-
-checkConsole()
-{
-	while(true)
-	{
-		if(getDvar("chat") != "xxxxxxxxxxxx")
-		{
-			level notify("sayConsole", getDvar("chat"));
-			setDvar("chat", "xxxxxxxxxxxx");
-		}
-		wait 0.1;
-	}
-}
-
-readconsole()
-{
-    self endon("end_game");
-    while (true) 
-    {
-		wait 0.1;
-		message = getDvar("chat");
-		if(message == "xxxxxxxxxxxx")
-			continue;
-        msg = strtok(tolower(message), " ");
-		if(!in_array(msg[0], level.StratTesterCommands) && (!in_array(msg[0], level.FragaCommands)))
-		{
-			strattesterprint("Unknown command ^1" + message);
-			continue;
-		}
-		if(!isdefined(player))
-			player = level.players[0];
-        switch(msg[0])
-        {
-            case "!a": strattesterprint(player.origin + "    " + player.angles); break;
-            case "!endround": endroundcase(); break;
-            case "!killhorde": killhordecase(); break;
-            case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
-            case "!tp": tpcase(player, msg[1]); break;
-            case "!sph": setDvar("sph", !getDvarInt("sph")); break;
-            case "!power": powercase(); break;
-            case "!boards": boardscase(); break;
-            case "!doors": doorscase(); break;
-            case "!round": setDvar("round", msg[1]); break;
-            case "!delay": setDvar("delay", msg[1]); break;
-            case "!zone": setDvar("zone", !getDvarInt("zone")); break;
-            case "!remaining": setDvar("remaining", !getDvarInt("remaining")); break;
-            case "!weapons": weaponscase(); break;
-            case "!perks": perkscase(); break;
-            case "!healthbar": setDvar("healthbar", !getDvarInt("healthbar")); break;
-            case "!timer": setDvar("timer", msg[1]); break;
-			case "!nuke": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("nuke", player.origin + (0, 0, 40)); break;
-			case "!max": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("full_ammo", player.origin + (0, 0, 40)); break;
-			case "!boxmove": boxmove(msg[1]); break;
-			case "!fog": fogcase(); break;
-			case "!notarget": notargetcase(player); break;
-        }
-		setDvar("chat", "xxxxxxxxxxxx");
-    }
 }
 
 createDvar(dvar, set)

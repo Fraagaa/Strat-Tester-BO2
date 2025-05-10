@@ -62,3 +62,8 @@ isvictismap()
 {
 	return (istranzit() || isburied() || isdierise());
 }
+
+isgreenrun()
+{
+	return (istown() || istranzit() || isfarm() || isdepot());
+}

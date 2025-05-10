@@ -1,4 +1,4 @@
-
+#include common_scripts\utility;
 fix_highround()
 {
 	if(level.script == "zm_tomb")
@@ -40,4 +40,27 @@ base_game_network_frame()
     }
     else
         wait 0.1;
+}
+
+// Remove other patches HUD (manually)
+
+removeUselessHUD()
+{
+	flag_wait("initial_blackscreen_passed");
+	might_have_b2op = false;
+	wait 0.1;
+	if(isdefined(level.timer_hud))
+		might_have_b2op = true;
+	level.timer_hud destroy();
+	level.springpad_hud destroy();
+	level.subwoofer_hud destroy();
+	level.turbine_hud destroy();
+	level.round_hud destroy();
+	while(might_have_b2op)
+	{
+		setDvar("cg_drawChecksums", 0);
+    	foreach(slot in level.set_of_slots)
+			slot.alpha = 0;
+		wait 0.1;
+	}
 }

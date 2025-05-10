@@ -4,6 +4,7 @@
 #include maps\mp\zombies\_zm_equipment;
 #include maps\mp\zombies\_zm_magicbox;
 #include maps\mp\zombies\_zm_utility;
+#include maps\mp\zombies\zm_tomb_capture_zones;
 
 #include scripts\zm\strattester\fixes;
 #include scripts\zm\strattester\commands;
@@ -13,133 +14,158 @@
 #include scripts\zm\strattester\ismap;
 #include scripts\zm\strattester\sph;
 
-// readchat() 
-// {
-//     self endon("end_game");
-// 	level.StratTesterCommands = [];
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!a";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!endround";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!killhorde";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!tpc";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!tp";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!sph";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!power";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!boards";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!doors";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!round";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!delay";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!zone";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!remaining";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!weapons";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!perks";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!healthbar";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!timer";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!nuke";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!max";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!boxmove";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!fog";
-// 	level.StratTesterCommands[level.StratTesterCommands.size] = "!notarget";
+readchat() 
+{
+    self endon("end_game");
+	level.StratTesterCommands = [];
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!a";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!endround";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!killhorde";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!tpc";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!tp";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!sph";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!power";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!boards";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!doors";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!round";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!delay";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!zone";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!remaining";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!weapons";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!perks";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!healthbar";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!timer";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!nuke";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!max";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!boxmove";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!fog";
+	level.StratTesterCommands[level.StratTesterCommands.size] = "!notarget";
 
-//     if(isgreenrun())
-//     {
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!denizen";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!busoff";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!depart";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!busloc";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!bustimer";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!perma";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!jug";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!buson";
-//     }
-//     if(isorigins())
-//     {
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!templars";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!stomp";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!tumble";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!tank";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!cherry";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!shield";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!wm";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!staff";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!gen";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!unlockgens";
-//     }
-//     if(ismob())
-//     {
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!shield";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!lives";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!traptimer";
-//     }
-//     if(isdierise()) level.StratTesterCommands[level.StratTesterCommands.size] = "!perma";
-//     if(isburied())
-//     {
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!buried";
-//         level.StratTesterCommands[level.StratTesterCommands.size] = "!perma";
-//     }
-//     while (true) 
-//     {
-//         level waittill("say", message, player);
-//         msg = strtok(tolower(message), " ");
-//         if(msg[0][0] != "!")
-//             continue;
-// 		if(!in_array(msg[0], level.StratTesterCommands))
-// 		{
-// 			strattesterprint("Unknown command ^1" + message);
-// 			continue;
-// 		}
-//         switch(msg[0])
-//         {
-//             case "!a": strattesterprint(player.origin + "    " + player.angles); break;
-//             case "!endround": endroundcase(); break;
-//             case "!killhorde": killhordecase(); break;
-//             case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
-//             case "!tp": tpcase(player, msg[1]); break;
-//             case "!sph": setDvar("sph", !getDvarInt("sph")); break;
-//             case "!power": powercase(); break;
-//             case "!boards": boardscase(); break;
-//             case "!doors": doorscase(); break;
-//             case "!round": setDvar("round", msg[1]); break;
-//             case "!delay": setDvar("delay", msg[1]); break;
-//             case "!zone": setDvar("zone", !getDvarInt("zone")); break;
-//             case "!remaining": setDvar("remaining", !getDvarInt("remaining")); break;
-//             case "!weapons": weaponscase(); break;
-//             case "!perks": perkscase(); break;
-//             case "!healthbar": setDvar("healthbar", !getDvarInt("healthbar")); break;
-//             case "!timer": setDvar("timer", msg[1]); break;
-// 			case "!nuke": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("nuke", player.origin + (0, 0, 40)); break;
-// 			case "!max": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("full_ammo", player.origin + (0, 0, 40)); break;
-// 			case "!boxmove": boxmove(msg[1]); break;
-// 			case "!fog": fogcase(); break;
-// 			case "!notarget": notargetcase(player); break;
-//             // TRANZIT
-//             case "!denizen": denizencase(); break;
-// 			case "!busoff": case "!buson": busoffcase(); break;
-//             case "!depart": departcase(msg[1]); break;
-//             case "!busloc": setDvar("busloc", !getDvarInt("busloc")); break;
-//             case "!bustimer": setDvar("bustimer", !getDvarInt("bustimer")); break;
-//             case "!perma": permacase(player); break;
-//             case "!jug": jugcase(); break;
-//             // ORIGINS
-//             case "!templars": level thread recapture_round_start(); break;
-//             case "!stomp": level.stomp_hud.alpha = !level.stomp_hud.alpha; break;
-//             case "!tumble": level.tumble_hud.alpha = !level.tumble_hud.alpha; break;
-//             case "!tank": level.tank_hud.alpha = !level.tank_hud.alpha; break;
-//             case "!cherry": cherrycase(); break;
-//             case "!shield": shieldcase(); break;
-//             case "!wm": wmcase(); break;
-//             case "!staff": staffcase(); break;
-// 			case "!gen": changeGenStatus(msg[1]); break;
-// 			case "!unlockgens": unlockgenscase(); break;
-//             // MOB
-//             case "!shield": shieldcase(); break;
-//             case "!lives": livescase(); break;
-//             case "!traptimer": setDvar("traptimer", !getDvarInt("traptimer")); break;
-//             // BURIED
-//             case "!buried": buriedcase(); break;
-//         }
-//     }
-// }
+    if(isgreenrun())
+    {
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!denizen";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!busoff";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!depart";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!busloc";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!bustimer";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!perma";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!jug";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!buson";
+    }
+    if(isorigins())
+    {
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!templars";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!stomp";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!tumble";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!tank";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!cherry";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!shield";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!wm";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!staff";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!gen";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!unlockgens";
+    }
+    if(ismob())
+    {
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!shield";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!lives";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!traptimer";
+    }
+    if(isdierise()) level.StratTesterCommands[level.StratTesterCommands.size] = "!perma";
+    if(isburied())
+    {
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!buried";
+        level.StratTesterCommands[level.StratTesterCommands.size] = "!perma";
+    }
+    while (true) 
+    {
+        level waittill("say", message, player);
+        msg = strtok(tolower(message), " ");
+        if(msg[0][0] != "!")
+            continue;
+		if(!in_array(msg[0], level.StratTesterCommands))
+		{
+			strattesterprint("Unknown command ^1" + message);
+			continue;
+		}
+        level thread commands(msg, player);
+    }
+}
 
+readconsole()
+{
+    self endon("end_game");
+    while (true) 
+    {
+		wait 0.05;
+		message = getDvar("chat");
+		if(message == "xxxxxxxxxxxx")
+			continue;
+        msg = strtok(tolower(message), " ");
+		if(!in_array(msg[0], level.StratTesterCommands) && (!in_array(msg[0], level.FragaCommands)))
+		{
+			strattesterprint("Unknown command ^1" + message);
+			continue;
+		}
+		if(!isdefined(player))
+			player = level.players[0];
+        level thread commands(msg, player);
+		setDvar("chat", "xxxxxxxxxxxx");
+    }
+}
+
+commands(msg, player)
+{
+    switch(msg[0])
+    {
+        case "!a": strattesterprint(player.origin + "    " + player.angles); break;
+        case "!endround": endroundcase(); break;
+        case "!killhorde": killhordecase(); break;
+        case "!tpc": tpccase(player, msg[1], msg[3], msg[2]); break;
+        case "!tp": tpcase(player, msg[1]); break;
+        case "!sph": setDvar("sph", !getDvarInt("sph")); break;
+        case "!power": powercase(); break;
+        case "!boards": boardscase(); break;
+        case "!doors": doorscase(); break;
+        case "!round": setDvar("round", msg[1]); break;
+        case "!delay": setDvar("delay", msg[1]); break;
+        case "!zone": setDvar("zone", !getDvarInt("zone")); break;
+        case "!remaining": setDvar("remaining", !getDvarInt("remaining")); break;
+        case "!weapons": weaponscase(); break;
+        case "!perks": perkscase(); break;
+        case "!healthbar": setDvar("healthbar", !getDvarInt("healthbar")); break;
+        case "!timer": setDvar("timer", msg[1]); break;
+        case "!nuke": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("nuke", player.origin + (0, 0, 40)); break;
+        case "!max": level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("full_ammo", player.origin + (0, 0, 40)); break;
+        case "!boxmove": boxmove(msg[1]); break;
+        case "!fog": fogcase(); break;
+        case "!notarget": notargetcase(player); break;
+        // TRANZIT
+        case "!denizen": denizencase(); break;
+        case "!busoff": case "!buson": busoffcase(); break;
+        case "!depart": departcase(msg[1]); break;
+        case "!busloc": setDvar("busloc", !getDvarInt("busloc")); break;
+        case "!bustimer": setDvar("bustimer", !getDvarInt("bustimer")); break;
+        case "!perma": permacase(player); break;
+        case "!jug": jugcase(); break;
+        // ORIGINS
+        case "!stomp": level.stomp_hud.alpha = !level.stomp_hud.alpha; break;
+        case "!tumble": level.tumble_hud.alpha = !level.tumble_hud.alpha; break;
+        case "!tank": level.tank_hud.alpha = !level.tank_hud.alpha; break;
+        case "!cherry": cherrycase(); break;
+        case "!shield": shieldcase(); break;
+        case "!wm": wmcase(); break;
+        case "!staff": staffcase(); break;
+        // MOB
+        case "!shield": shieldcase(); break;
+        case "!lives": livescase(); break;
+        case "!traptimer": setDvar("traptimer", !getDvarInt("traptimer")); break;
+        // BURIED
+        case "!buried": buriedcase(); break;
+        default: break;
+    }
+    setDvar("chat", "xxxxxxxxxxxx");
+}
 boxmove(location)
 {
 	switch(location)
@@ -785,47 +811,6 @@ staffcase()
 		strattesterprint("You can spawn with the ice staff or the wind staff");
 }
 
-// changeGenStatus(generator)
-// {
-// 	generator = string_to_float(generator);
-// 	switch(generator)
-// 	{
-// 		case 1: name = "generator_start_bunker"; break;
-// 		case 2: name = "generator_tank_trench"; break;
-// 		case 3: name = "generator_mid_trench"; break;
-// 		case 4: name = "generator_nml_right"; break;
-// 		case 5: name = "generator_nml_left"; break;
-// 		case 6: name = "generator_church"; break;
-// 	}
-// 	foreach (gen in getstructarray( "s_generator", "targetname" ))
-// 	{
-// 		if(gen.script_noteworthy == name)
-// 		{
-// 			if(gen.n_current_progress == 100)
-// 			{
-// 				gen.n_current_progress = 0;
-// 				gen set_zombie_controlled_area();
-// 				level setclientfield( gen.script_noteworthy, gen.n_current_progress / 100 );
-// 				level setclientfield( "state_" + gen.script_noteworthy, 0 );
-// 			}
-// 			else
-// 			{
-// 				gen.n_current_progress = 100;
-// 				gen players_capture_zone();
-// 				level setclientfield( gen.script_noteworthy, gen.n_current_progress / 100 );
-// 				level setclientfield( "state_" + gen.script_noteworthy, 2 );
-// 			}
-// 		}
-// 	}
-// }
-
-// unlockgenscase()
-// {
-// 	foreach (gen in getstructarray( "s_generator", "targetname" ))
-// 		gen thread init_capture_zone();
-// 	strattesterprint("All generators have been unlocked");
-// }
-
 livescase()
 {
     setDvar("lives", !getDvarInt("lives"));
@@ -842,4 +827,8 @@ buriedcase()
 		strattesterprint("Subwofer will be built at jug");
 	else
 		strattesterprint("Subwofer will be built at saloon");
+}
+boxhitscase()
+{
+	setDvar("boxhits", !getDvarInt("boxhits"));
 }
