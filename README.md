@@ -46,6 +46,7 @@
 
 ### Origins
 - `!cherry`      toggles getting cherry in origins
+- `!gen x`       activates generator number x
 - `!shield`      toggles starting with shield equipped and built
 - `!stomp`       toggles stomp counter on origins
 - `!staff`       toggles ice/wind staff on solo
@@ -136,6 +137,5 @@
 - Tracker for tank kills (does not count the flamethrower kills) (can be turned on with !tank)
 
 # TO DO
-- Make it so generators cant get locked
 - Add menus
 - Display when zombies are killed by gondola
