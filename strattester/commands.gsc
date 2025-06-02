@@ -448,11 +448,11 @@ weaponscase()
 
 perkscase()
 {
+    setDvar("perks", !getDvarInt("perks"));
     if(getDvarInt("perks"))
         strattesterprint("You will spawn with perks");
     else
         strattesterprint("You will spawn without perks");
-    setDvar("perks", !getDvarInt("perks")); 
 }
 
 dropscase()
